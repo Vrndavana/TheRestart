@@ -32,6 +32,9 @@ function App() {
   // Post input state
   const [postText, setPostText] = useState('');
 
+  // Media file state for the post being written
+  const [postMedia, setPostMedia] = useState(null);
+
   // Posts state: initial posts from John and Jane with counters and comments
   const [posts, setPosts] = useState([
     {
@@ -42,15 +45,17 @@ function App() {
       dislikes: 0,
       comments: [],
       shares: 0,
+      media: null,
     },
     {
       id: 2,
       username: 'Jane Smith',
-      content: 'wrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdty wrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdty.',
+      content: 'Just finished reading a fantastic book.',
       likes: 0,
       dislikes: 0,
       comments: [],
       shares: 0,
+      media: null,
     },
   ]);
 
@@ -64,19 +69,35 @@ function App() {
   // State to track which post's comments are visible
   const [visibleCommentsPostId, setVisibleCommentsPostId] = useState(null);
 
-  // Ref for detecting clicks outside comments and textarea
+  // Refs for detecting clicks outside comments and textarea
   const commentsRef = useRef(null);
   const textareaRef = useRef(null);
   const newsfeedRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Handlers
   const handleToggle = () => {
     setToggle(!toggle);
   };
 
+  // Handle file input change
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPostMedia(file);
+    }
+  };
+
+  // Trigger file input click
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   // Add or post new post or comment
   const handlePost = () => {
-    if (postText.trim() === '') return;
+    if (postText.trim() === '' && !postMedia) return;
 
     if (visibleCommentsPostId !== null) {
       // Add comment to the post with like/dislike counters
@@ -97,9 +118,10 @@ function App() {
         )
       );
       setPostText('');
+      setPostMedia(null);
       setVisibleCommentsPostId(null);
     } else {
-      // Add new post
+      // Add new post with media if any
       const newPost = {
         id: Date.now(),
         username: currentUser,
@@ -108,9 +130,12 @@ function App() {
         dislikes: 0,
         comments: [],
         shares: 0,
+        media: postMedia ? URL.createObjectURL(postMedia) : null,
+        mediaName: postMedia ? postMedia.name : null,
       };
       setPosts([newPost, ...posts]);
       setPostText('');
+      setPostMedia(null);
     }
   };
 
@@ -202,9 +227,11 @@ function App() {
     if (visibleCommentsPostId === postId) {
       setVisibleCommentsPostId(null);
       setPostText('');
+      setPostMedia(null);
     } else {
       setVisibleCommentsPostId(postId);
       setPostText('');
+      setPostMedia(null);
       setTimeout(() => {
         if (textareaRef.current) textareaRef.current.focus();
       }, 0);
@@ -307,6 +334,7 @@ function App() {
       ) {
         setVisibleCommentsPostId(null);
         setPostText('');
+        setPostMedia(null);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -369,7 +397,7 @@ function App() {
     <form
       onSubmit={handleLogin}
       style={{
-        backgroundColor: '#fff',
+        backgroundColor: '#aa88c0',
         padding: '30px',
         borderRadius: '8px',
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
@@ -565,7 +593,7 @@ function App() {
     </form>
   );
 
-  // Fixed Post Widget at bottom
+  // Fixed Post Widget at bottom with Upload button added
   const postWidget = (
     <section
       style={{
@@ -573,7 +601,7 @@ function App() {
         bottom: '50px',
         left: 0,
         width: '100%',
-        backgroundColor: '#fff',
+        backgroundColor: '#7da59c',
         boxShadow: '0 -2px 8px rgba(0,0,0,0.1)',
         padding: '15px 20px',
         boxSizing: 'border-box',
@@ -588,7 +616,7 @@ function App() {
           maxWidth: '600px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px',
+          gap: '6px',
         }}
       >
         <textarea
@@ -596,13 +624,13 @@ function App() {
           placeholder={
             visibleCommentsPostId !== null
               ? 'Write a comment...'
-              : "What's on your mind?"
+              : "Post To The World!"
           }
           value={postText}
           onChange={(e) => setPostText(e.target.value)}
           style={{
             width: '100%',
-            height: '80px',
+            height: '60px',
             padding: '10px',
             fontSize: '16px',
             borderRadius: '5px',
@@ -626,7 +654,7 @@ function App() {
               height: '24px',
               borderRadius: '12px',
               border: '1px solid #ccc',
-              backgroundColor: toggle ? '#1877f2' : '#fff',
+              backgroundColor: toggle ? '#1877f2' : '#4e4848',
               cursor: 'pointer',
               position: 'relative',
               outline: 'none',
@@ -650,6 +678,38 @@ function App() {
           </button>
           <span style={{ fontSize: '16px', userSelect: 'none' }}>Post to all</span>
 
+          {/* Upload Button */}
+          <button
+            onClick={() => fileInputRef.current && fileInputRef.current.click()}
+            style={{
+              padding: '6px 12px',
+              backgroundColor: '#1976d2',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '14px',
+            }}
+            aria-label="Upload media"
+          >
+            Add Media
+          </button>
+
+          {/* Hidden file input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                setPostMedia(file);
+              }
+            }}
+            accept="*/*"
+          />
+
           {currentUser === 'SecurityGuy' && (
             <button
               onClick={handleDeleteAllPosts}
@@ -670,6 +730,23 @@ function App() {
             </button>
           )}
         </div>
+
+        {/* Show selected media file name if any */}
+        {postMedia && (
+          <div
+            style={{
+              fontSize: '14px',
+              color: '#555',
+              padding: '6px 10px',
+              backgroundColor: '#f0f0f0',
+              borderRadius: '5px',
+              maxWidth: '600px',
+              overflowWrap: 'break-word',
+            }}
+          >
+            Selected file: {postMedia.name}
+          </div>
+        )}
 
         <button
           onClick={handlePost}
@@ -709,7 +786,7 @@ function App() {
         flexDirection: 'column',
         minHeight: '100vh',
         fontFamily: 'Arial, sans-serif',
-        backgroundColor: '#f0f2f5',
+        backgroundColor: '#254042',
         paddingBottom: '60px',
       }}
       ref={newsfeedRef}
@@ -728,7 +805,7 @@ function App() {
               key={post.id}
               style={{
                 marginBottom: '20px',
-                backgroundColor: '#fff',
+                backgroundColor: '#c5cdda',
                 padding: '15px',
                 borderRadius: '8px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
@@ -738,6 +815,37 @@ function App() {
             >
               <h3>{post.username}</h3>
               <p>{post.content}</p>
+
+              {/* Show media if any */}
+              {post.media && (
+                <div style={{ marginTop: '10px' }}>
+                  {/* Display media based on type */}
+                  {post.media.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                    <img
+                      src={post.media}
+                      alt="Post media"
+                      style={{ maxWidth: '100%', borderRadius: '8px' }}
+                    />
+                  ) : post.media.match(/\.(mp4|webm|ogg)$/i) ? (
+                    <video
+                      controls
+                      src={post.media}
+                      style={{ maxWidth: '100%', borderRadius: '8px' }}
+                    />
+                  ) : post.media.match(/\.(mp3|wav|ogg)$/i) ? (
+                    <audio controls src={post.media} style={{ width: '100%' }} />
+                  ) : (
+                    <a
+                      href={post.media}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#1976d2' }}
+                    >
+                      {post.mediaName || 'Download file'}
+                    </a>
+                  )}
+                </div>
+              )}
 
               <div
                 style={{
@@ -938,19 +1046,19 @@ function App() {
           bottom: 0,
           left: 0,
           width: '100%',
-          backgroundColor: '#fff',
+          backgroundColor: '#687e7c',
           borderTop: '1px solid #ddd',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          padding: '10px 20px',
+          padding: '5px 2px',
           boxShadow: '0 -1px 5px rgba(0,0,0,0.1)',
           zIndex: 1000,
-          gap: '20px',
+          gap: '5px',
           fontFamily: 'Arial, sans-serif',
         }}
       >
-        <div style={{ fontWeight: 'bold', color: '#1877f2', marginRight: 'auto' }}>
+        <div style={{ fontWeight: 'bold', color: '#fafdfd', marginRight: 'auto' }}>
           {currentUser}
         </div>
 
@@ -1004,7 +1112,7 @@ function App() {
           justifyContent: 'center',
           alignItems: 'center',
           fontFamily: 'Arial, sans-serif',
-          backgroundColor: '#f0f2f5',
+          backgroundColor: '#1f2227',
           padding: '20px',
         }}
       >
