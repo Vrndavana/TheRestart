@@ -1,0 +1,23 @@
+{
+  "name": "restart",
+  "version": "1.0.0",
+  "description": "restarting",
+  "keywords": [
+    "lotus"
+  ],
+  "homepage": "https://github.com/Vrndavana/TheRestart#readme",
+  "bugs": {
+    "url": "https://github.com/Vrndavana/TheRestart/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vrndavana/TheRestart.git"
+  },
+  "license": "UNLICENSED",
+  "author": "lotus",
+  "type": "commonjs",
+  "main": "MainPage",
+  "scripts": {
+    "test": "testit"
+  }
+}
