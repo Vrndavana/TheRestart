@@ -46,7 +46,7 @@ function App() {
     {
       id: 2,
       username: 'Jane Smith',
-      content: 'Just finished reading a fantastic book.',
+      content: 'wrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdty wrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdtywrhwrthwrthsfghdjsrtdtufksgstudyuhgrhdty.',
       likes: 0,
       dislikes: 0,
       comments: [],
@@ -97,8 +97,7 @@ function App() {
         )
       );
       setPostText('');
-      // Do NOT immediately close comment box here; user clicks outside newsfeed to close
-      // So comment box stays open until user clicks outside newsfeed area
+      setVisibleCommentsPostId(null);
     } else {
       // Add new post
       const newPost = {
@@ -734,6 +733,7 @@ function App() {
                 borderRadius: '8px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                 position: 'relative',
+                overflowWrap: 'break-word',
               }}
             >
               <h3>{post.username}</h3>
@@ -860,6 +860,7 @@ function App() {
                     padding: '10px',
                     fontSize: '13px',
                     color: '#333',
+                    overflowWrap: 'break-word',
                   }}
                 >
                   {post.comments.length === 0 && (
