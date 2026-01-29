@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function App() {
   // Initial default users
@@ -32,39 +32,289 @@ function App() {
   // Post input state
   const [postText, setPostText] = useState('');
 
-  // Posts state: initial posts from John and Jane
+  // Posts state: initial posts from John and Jane with counters and comments
   const [posts, setPosts] = useState([
-    { id: 1, username: 'John Doe', content: 'Had a great day at the beach!' },
-    { id: 2, username: 'Jane Smith', content: 'Just finished reading a fantastic book.' },
+    {
+      id: 1,
+      username: 'John Doe',
+      content: 'Had a great day at the beach!',
+      likes: 0,
+      dislikes: 0,
+      comments: [],
+      shares: 0,
+    },
+    {
+      id: 2,
+      username: 'Jane Smith',
+      content: 'Just finished reading a fantastic book.',
+      likes: 0,
+      dislikes: 0,
+      comments: [],
+      shares: 0,
+    },
   ]);
+
+  // Track posts liked and disliked by current user (store post ids)
+  const [likedPosts, setLikedPosts] = useState([]);
+  const [dislikedPosts, setDislikedPosts] = useState([]);
+
+  // Track posts shared by current user (store post ids)
+  const [sharedPosts, setSharedPosts] = useState([]);
+
+  // State to track which post's comments are visible
+  const [visibleCommentsPostId, setVisibleCommentsPostId] = useState(null);
+
+  // Ref for detecting clicks outside comments and textarea
+  const commentsRef = useRef(null);
+  const textareaRef = useRef(null);
+  const newsfeedRef = useRef(null);
 
   // Handlers
   const handleToggle = () => {
     setToggle(!toggle);
   };
 
+  // Add or post new post or comment
   const handlePost = () => {
-    if (postText.trim() === '') return; // ignore empty posts
+    if (postText.trim() === '') return;
 
-    const newPost = {
-      id: Date.now(),
-      username: currentUser,
-      content: postText.trim(),
-    };
-
-    setPosts([newPost, ...posts]); // add new post at the top
-    setPostText(''); // clear textarea
+    if (visibleCommentsPostId !== null) {
+      // Add comment to the post with like/dislike counters
+      const newComment = {
+        id: Date.now(),
+        username: currentUser,
+        content: postText.trim(),
+        likes: 0,
+        dislikes: 0,
+        likedBy: [],
+        dislikedBy: [],
+      };
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === visibleCommentsPostId
+            ? { ...post, comments: [...post.comments, newComment] }
+            : post
+        )
+      );
+      setPostText('');
+      // Do NOT immediately close comment box here; user clicks outside newsfeed to close
+      // So comment box stays open until user clicks outside newsfeed area
+    } else {
+      // Add new post
+      const newPost = {
+        id: Date.now(),
+        username: currentUser,
+        content: postText.trim(),
+        likes: 0,
+        dislikes: 0,
+        comments: [],
+        shares: 0,
+      };
+      setPosts([newPost, ...posts]);
+      setPostText('');
+    }
   };
 
-  // Delete post handler - only SecurityGuy can delete any post, others only their own
   const handleDeletePost = (postId) => {
     setPosts(posts.filter((post) => post.id !== postId));
+    if (visibleCommentsPostId === postId) {
+      setVisibleCommentsPostId(null);
+    }
+    // Also remove from liked/disliked/shared if present
+    setLikedPosts((prev) => prev.filter((id) => id !== postId));
+    setDislikedPosts((prev) => prev.filter((id) => id !== postId));
+    setSharedPosts((prev) => prev.filter((id) => id !== postId));
   };
 
-  // Delete all posts handler - only SecurityGuy can see and use this
   const handleDeleteAllPosts = () => {
     setPosts([]);
+    setVisibleCommentsPostId(null);
+    setLikedPosts([]);
+    setDislikedPosts([]);
+    setSharedPosts([]);
   };
+
+  // Like toggle handler for posts
+  const handleLike = (postId) => {
+    if (likedPosts.includes(postId)) {
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId ? { ...post, likes: post.likes - 1 } : post
+        )
+      );
+      setLikedPosts((prev) => prev.filter((id) => id !== postId));
+    } else {
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId ? { ...post, likes: post.likes + 1 } : post
+        )
+      );
+      setLikedPosts((prev) => [...prev, postId]);
+      if (dislikedPosts.includes(postId)) {
+        setDislikedPosts((prev) => prev.filter((id) => id !== postId));
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === postId ? { ...post, dislikes: post.dislikes - 1 } : post
+          )
+        );
+      }
+    }
+  };
+
+  // Dislike toggle handler for posts
+  const handleDislike = (postId) => {
+    if (dislikedPosts.includes(postId)) {
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId ? { ...post, dislikes: post.dislikes - 1 } : post
+        )
+      );
+      setDislikedPosts((prev) => prev.filter((id) => id !== postId));
+    } else {
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId ? { ...post, dislikes: post.dislikes + 1 } : post
+        )
+      );
+      setDislikedPosts((prev) => [...prev, postId]);
+      if (likedPosts.includes(postId)) {
+        setLikedPosts((prev) => prev.filter((id) => id !== postId));
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === postId ? { ...post, likes: post.likes - 1 } : post
+          )
+        );
+      }
+    }
+  };
+
+  // Share handler (normal button)
+  const handleShare = (postId) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId ? { ...post, shares: post.shares + 1 } : post
+      )
+    );
+    alert('Shared post! (Functionality placeholder)');
+  };
+
+  // Comment button toggles comment box visibility
+  const handleCommentClick = (postId) => {
+    if (visibleCommentsPostId === postId) {
+      setVisibleCommentsPostId(null);
+      setPostText('');
+    } else {
+      setVisibleCommentsPostId(postId);
+      setPostText('');
+      setTimeout(() => {
+        if (textareaRef.current) textareaRef.current.focus();
+      }, 0);
+    }
+  };
+
+  // Like toggle for comments
+  const handleCommentLike = (postId, commentId) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => {
+        if (post.id !== postId) return post;
+        return {
+          ...post,
+          comments: post.comments.map((comment) => {
+            if (comment.id !== commentId) return comment;
+            const liked = comment.likedBy?.includes(currentUser);
+            const disliked = comment.dislikedBy?.includes(currentUser);
+            let newLikedBy = comment.likedBy || [];
+            let newDislikedBy = comment.dislikedBy || [];
+            let likes = comment.likes || 0;
+            let dislikes = comment.dislikes || 0;
+
+            if (liked) {
+              // Remove like
+              newLikedBy = newLikedBy.filter((u) => u !== currentUser);
+              likes--;
+            } else {
+              // Add like
+              newLikedBy = [...newLikedBy, currentUser];
+              likes++;
+              // Remove dislike if present
+              if (disliked) {
+                newDislikedBy = newDislikedBy.filter((u) => u !== currentUser);
+                dislikes--;
+              }
+            }
+            return {
+              ...comment,
+              likes,
+              dislikes,
+              likedBy: newLikedBy,
+              dislikedBy: newDislikedBy,
+            };
+          }),
+        };
+      })
+    );
+  };
+
+  // Dislike toggle for comments
+  const handleCommentDislike = (postId, commentId) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => {
+        if (post.id !== postId) return post;
+        return {
+          ...post,
+          comments: post.comments.map((comment) => {
+            if (comment.id !== commentId) return comment;
+            const liked = comment.likedBy?.includes(currentUser);
+            const disliked = comment.dislikedBy?.includes(currentUser);
+            let newLikedBy = comment.likedBy || [];
+            let newDislikedBy = comment.dislikedBy || [];
+            let likes = comment.likes || 0;
+            let dislikes = comment.dislikes || 0;
+
+            if (disliked) {
+              // Remove dislike
+              newDislikedBy = newDislikedBy.filter((u) => u !== currentUser);
+              dislikes--;
+            } else {
+              // Add dislike
+              newDislikedBy = [...newDislikedBy, currentUser];
+              dislikes++;
+              // Remove like if present
+              if (liked) {
+                newLikedBy = newLikedBy.filter((u) => u !== currentUser);
+                likes--;
+              }
+            }
+            return {
+              ...comment,
+              likes,
+              dislikes,
+              likedBy: newLikedBy,
+              dislikedBy: newDislikedBy,
+            };
+          }),
+        };
+      })
+    );
+  };
+
+  // Close comments if clicking outside newsfeed area (not just comments or textarea)
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        newsfeedRef.current &&
+        !newsfeedRef.current.contains(event.target) &&
+        visibleCommentsPostId !== null
+      ) {
+        setVisibleCommentsPostId(null);
+        setPostText('');
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [visibleCommentsPostId]);
 
   // Login submit handler
   const handleLogin = (e) => {
@@ -110,9 +360,12 @@ function App() {
     setSignupError('');
     setUsernameTaken(false);
     setIsSigningUp(false);
+    setLikedPosts([]);
+    setDislikedPosts([]);
+    setSharedPosts([]);
   };
 
-  // Login form JSX
+  // Login form JSX (unchanged)
   const loginForm = (
     <form
       onSubmit={handleLogin}
@@ -207,7 +460,7 @@ function App() {
     </form>
   );
 
-  // Signup form JSX
+  // Signup form JSX (unchanged)
   const signupForm = (
     <form
       onSubmit={handleSignup}
@@ -318,7 +571,7 @@ function App() {
     <section
       style={{
         position: 'fixed',
-        bottom: '50px', // height of bottom nav bar + some spacing
+        bottom: '50px',
         left: 0,
         width: '100%',
         backgroundColor: '#fff',
@@ -340,7 +593,12 @@ function App() {
         }}
       >
         <textarea
-          placeholder="What's on your mind?"
+          ref={textareaRef}
+          placeholder={
+            visibleCommentsPostId !== null
+              ? 'Write a comment...'
+              : "What's on your mind?"
+          }
           value={postText}
           onChange={(e) => setPostText(e.target.value)}
           style={{
@@ -393,7 +651,6 @@ function App() {
           </button>
           <span style={{ fontSize: '16px', userSelect: 'none' }}>Post to all</span>
 
-          {/* Show Delete All button only for SecurityGuy */}
           {currentUser === 'SecurityGuy' && (
             <button
               onClick={handleDeleteAllPosts}
@@ -428,13 +685,12 @@ function App() {
             fontWeight: 'bold',
           }}
         >
-          Post
+          {visibleCommentsPostId !== null ? 'Comment' : 'Post'}
         </button>
       </div>
     </section>
   );
 
-  // Adjust main content style to add padding bottom so content is not hidden behind fixed post widget and nav bar
   const mainContentStyle = {
     flex: 1,
     display: 'flex',
@@ -442,11 +698,10 @@ function App() {
     justifyContent: 'flex-start',
     alignItems: 'center',
     padding: '20px',
-    paddingBottom: '180px', // enough space for post widget + nav bar
+    paddingBottom: '180px',
     overflowY: 'auto',
   };
 
-  // Logged in main app UI
   const mainApp = (
     <div
       className="app-container"
@@ -456,17 +711,18 @@ function App() {
         minHeight: '100vh',
         fontFamily: 'Arial, sans-serif',
         backgroundColor: '#f0f2f5',
-        paddingBottom: '60px', // space for bottom nav (still needed)
+        paddingBottom: '60px',
       }}
+      ref={newsfeedRef}
     >
       <main style={mainContentStyle}>
-        {/* Posts from others and user posts */}
         <section
           style={{
             width: '100%',
             maxWidth: '600px',
             marginBottom: '20px',
           }}
+          ref={commentsRef}
         >
           {posts.map((post) => (
             <article
@@ -482,15 +738,38 @@ function App() {
             >
               <h3>{post.username}</h3>
               <p>{post.content}</p>
-              {/* Show delete button only for SecurityGuy or post owner */}
-              {(currentUser === 'SecurityGuy' || post.username === currentUser) && (
+
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '10px',
+                  right: '10px',
+                  display: 'flex',
+                  gap: '6px',
+                }}
+              >
+                {(currentUser === 'SecurityGuy' || post.username === currentUser) && (
+                  <button
+                    onClick={() => handleDeletePost(post.id)}
+                    style={{
+                      backgroundColor: '#e53935',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '4px 8px',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                    }}
+                    aria-label="Delete post"
+                  >
+                    Delete
+                  </button>
+                )}
+
                 <button
-                  onClick={() => handleDeletePost(post.id)}
+                  onClick={() => handleLike(post.id)}
                   style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    backgroundColor: '#e53935',
+                    backgroundColor: likedPosts.includes(post.id) ? '#2e7d32' : '#4caf50',
                     color: '#fff',
                     border: 'none',
                     borderRadius: '4px',
@@ -498,20 +777,160 @@ function App() {
                     cursor: 'pointer',
                     fontSize: '12px',
                   }}
-                  aria-label="Delete post"
+                  aria-pressed={likedPosts.includes(post.id)}
+                  aria-label="Like post"
                 >
-                  Delete
+                  Like
                 </button>
+
+                <button
+                  onClick={() => handleDislike(post.id)}
+                  style={{
+                    backgroundColor: dislikedPosts.includes(post.id) ? '#b71c1c' : '#f44336',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                  }}
+                  aria-pressed={dislikedPosts.includes(post.id)}
+                  aria-label="Dislike post"
+                >
+                  Dislike
+                </button>
+
+                <button
+                  onClick={() => handleCommentClick(post.id)}
+                  style={{
+                    backgroundColor: '#2196f3',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                  }}
+                  aria-pressed={visibleCommentsPostId === post.id}
+                  aria-label="Comment on post"
+                >
+                  Comment
+                </button>
+
+                <button
+                  onClick={() => handleShare(post.id)}
+                  style={{
+                    backgroundColor: '#9c27b0',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                  }}
+                  aria-label="Share post"
+                >
+                  Share
+                </button>
+              </div>
+
+              <div
+                style={{
+                  marginTop: '12px',
+                  fontSize: '14px',
+                  color: '#555',
+                  display: 'flex',
+                  gap: '15px',
+                }}
+              >
+                <span>👍 {post.likes}</span>
+                <span>👎 {post.dislikes}</span>
+                <span>💬 {post.comments.length}</span>
+                <span>🔄 {post.shares}</span>
+              </div>
+
+              {visibleCommentsPostId === post.id && (
+                <div
+                  style={{
+                    marginTop: '10px',
+                    maxHeight: '150px',
+                    overflowY: 'auto',
+                    backgroundColor: '#f9f9f9',
+                    borderRadius: '5px',
+                    padding: '10px',
+                    fontSize: '13px',
+                    color: '#333',
+                  }}
+                >
+                  {post.comments.length === 0 && (
+                    <div style={{ fontStyle: 'italic', color: '#777' }}>
+                      No comments yet.
+                    </div>
+                  )}
+                  {post.comments.map((comment) => {
+                    const liked = comment.likedBy?.includes(currentUser);
+                    const disliked = comment.dislikedBy?.includes(currentUser);
+                    return (
+                      <div
+                        key={comment.id}
+                        style={{
+                          marginBottom: '8px',
+                          borderBottom: '1px solid #ddd',
+                          paddingBottom: '4px',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <div>
+                          <strong>{comment.username}:</strong> {comment.content}
+                        </div>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <button
+                            onClick={() => handleCommentLike(post.id, comment.id)}
+                            style={{
+                              backgroundColor: liked ? '#2e7d32' : '#4caf50',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '4px',
+                              padding: '2px 6px',
+                              cursor: 'pointer',
+                              fontSize: '11px',
+                            }}
+                            aria-pressed={liked}
+                            aria-label="Like comment"
+                          >
+                            👍 {comment.likes || 0}
+                          </button>
+                          <button
+                            onClick={() => handleCommentDislike(post.id, comment.id)}
+                            style={{
+                              backgroundColor: disliked ? '#b71c1c' : '#f44336',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '4px',
+                              padding: '2px 6px',
+                              cursor: 'pointer',
+                              fontSize: '11px',
+                            }}
+                            aria-pressed={disliked}
+                            aria-label="Dislike comment"
+                          >
+                            👎 {comment.dislikes || 0}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </article>
           ))}
         </section>
       </main>
 
-      {/* Fixed Post Widget */}
       {postWidget}
 
-      {/* Bottom Navigation Bar */}
       <nav
         style={{
           position: 'fixed',
@@ -530,7 +949,6 @@ function App() {
           fontFamily: 'Arial, sans-serif',
         }}
       >
-        {/* Username on left */}
         <div style={{ fontWeight: 'bold', color: '#1877f2', marginRight: 'auto' }}>
           {currentUser}
         </div>
@@ -545,7 +963,9 @@ function App() {
             alignItems: 'center',
           }}
         >
-          <li style={{ cursor: 'pointer', fontWeight: 'bold', color: '#1877f2' }}>Home</li>
+          <li style={{ cursor: 'pointer', fontWeight: 'bold', color: '#1877f2' }}>
+            Home
+          </li>
           <li style={{ cursor: 'pointer' }}>Profile</li>
           <li style={{ cursor: 'pointer' }}>Friends</li>
           <li style={{ cursor: 'pointer' }}>Messages</li>
