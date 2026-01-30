@@ -1,5 +1,8 @@
 import React from 'react';
 
+import {BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import Profile from './Profile';
+
 const Nav = ({ currentUser, handleLogout }) => {
   return (
     <nav
@@ -35,10 +38,18 @@ const Nav = ({ currentUser, handleLogout }) => {
           alignItems: 'center',
         }}
       >
-        <li style={{ cursor: 'pointer', fontWeight: 'bold', color: '#1877f2' }}>
+
+
+
+
+
+
+        {/* <li style={{ cursor: 'pointer', fontWeight: 'bold', color: '#1877f2' }}>
           Home
-        </li>
-        <li style={{ cursor: 'pointer' }}>Profile</li>
+        </li> */}
+
+        {/* <Link to="/Profile"> <Profile/>  </Link> */}
+        {/* <li style={{ cursor: 'pointer', fontWeight: 'bold', color: '#1877f2' }}><Link to="/">Home</Link></li> */}
         <li style={{ cursor: 'pointer' }}>Friends</li>
         <li style={{ cursor: 'pointer' }}>Messages</li>
         <li style={{ cursor: 'pointer' }}>Settings</li>
@@ -61,6 +72,16 @@ const Nav = ({ currentUser, handleLogout }) => {
             Log Out
           </button>
         </li>
+
+
+
+
+
+
+
+
+
+
       </ul>
     </nav>
   );

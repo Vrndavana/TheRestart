@@ -18,7 +18,7 @@ export default function Articles({
  
     {return(
 
-        <section style={{ width: "100%", maxWidth: "600px", marginBottom: "20px",}} ref={commentsRef}>
+        <section style={{ width: "100%", maxWidth: "90%", marginBottom: "20px",}} ref={commentsRef}>
         
                             {/* Begininng of Post Content of USER NOT INTERACTS  */}
             {posts.map((post) => (
@@ -89,23 +89,7 @@ export default function Articles({
               padding: "20px",
             }}
           >
-            {(currentUser === "SecurityGuy" || post.username === currentUser) && (
-              <button
-                onClick={() => handleDeletePost(post.id)}
-                style={{
-                  backgroundColor: "#e53935",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "4px",
-                  padding: "4px 8px",
-                  cursor: "pointer",
-                  fontSize: "12px",
-                }}
-                aria-label="Delete post"
-              >
-                Delete
-              </button>
-            )}
+        
 
             <button
               onClick={() => handleLike(post.id)}
@@ -175,6 +159,30 @@ export default function Articles({
             >
               Share
              </button>
+
+             {/* DELETE BUTTON FOR ADMIN AND USERS  */}
+    {(currentUser === "SecurityGuy" || post.username === currentUser) && (
+              <button
+                onClick={() => handleDeletePost(post.id)}
+                style={{
+                  backgroundColor: "#e53935",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  padding: "4px 8px",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                }}
+                aria-label="Delete post"
+              >
+                Delete
+              </button>
+            )}
+
+
+
+
+
                 </div>
 
                 {/* Post Reaction Span Count  */}
@@ -194,11 +202,10 @@ export default function Articles({
   }}>
 
   {/* THESE ARE THE COUNTERS FOR THE LIKES ON THE POTS  */}
-  <span style={{margin: "5px",}}>👍 {post.likes}</span>
-  <span style={{margin: "5px",}}>👎 {post.dislikes}</span>
-  <span style={{margin: "5px",}}>💬 {post.comments.length}</span>
-  <span style={{margin: "5px",}}>🔄 {post.shares}</span>
-
+  <span style={{margin: "1%",}}>👍 {post.likes}</span>
+  <span style={{margin: "1%",}}>👎 {post.dislikes}</span>
+  <span style={{margin: "1%",}}>💬 {post.comments.length}</span>
+  <span style={{margin: "1%",}}>🔄 {post.shares}</span>
 
 </div>
 
@@ -211,12 +218,13 @@ export default function Articles({
 
                     <div
                         style={{
-                marginTop: "10px",
+                marginBottom: "5%",
                 maxHeight: "150px",
                 overflowY: "auto",
                 backgroundColor: "#f9f9f9",
-                borderRadius: "5px",
-                padding: "10px",
+                borderRadius: "5%",
+                padding: "2%",
+                width: "85%",
                 fontSize: "13px",
                 color: "#333",
                 overflowWrap: "break-word",

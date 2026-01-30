@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Articles from "./Components/Articles";
+import Profile from "./Components/Profile";
 import Nav from './Components/Nav';
-
+import {BrowserRouter, Routes, Route } from 'react-router-dom';
 
 
 function App() {
@@ -844,7 +845,13 @@ function App() {
     overflowY: 'auto',
   };
 
+    // MAIN APP MAIN APP MAIN APP MAIN APP
   // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
+   // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
+    // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
+     // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
+      // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
+       // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
 
   const mainApp = (
 
@@ -852,13 +859,15 @@ function App() {
     <div className="app-container" style={{display: 'flex', flexDirection: 'column', minHeight: '100vh', fontFamily: 'Arial, sans-serif', backgroundColor: '#254042', paddingBottom: '60px',}}ref={newsfeedRef}>
 
       <main style={mainContentStyle}>
-        <Articles posts={posts} commentsRef={commentsRef} currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
+          <Articles posts={posts} commentsRef={commentsRef} currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
+          <Profile posts={posts}currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
       </main>
 
       {postWidget}
       <Nav currentUser={currentUser} handleLogout={handleLogout} />
+
     </div>
-    
+
   );
 
 
