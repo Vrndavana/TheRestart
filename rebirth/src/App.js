@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Articles from "./Components/Articles";
 
 function App() {
+
   // Initial default users
   const defaultUsers = {
     OperaGuy: 'Aaah!',
@@ -11,14 +13,14 @@ function App() {
   const [users, setUsers] = useState(defaultUsers);
 
   // Authentication & UI states
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn,  setIsLoggedIn]  = useState(false);
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [currentUser, setCurrentUser] = useState('');
 
   // Login form states
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
+  const [loginError,    setLoginError]    = useState('');
 
   // Signup form states
   const [signupUsername, setSignupUsername] = useState('');
@@ -139,6 +141,8 @@ function App() {
     }
   };
 
+
+    // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
   const handleDeletePost = (postId) => {
     setPosts(posts.filter((post) => post.id !== postId));
     if (visibleCommentsPostId === postId) {
@@ -323,26 +327,37 @@ function App() {
       })
     );
   };
+// ALL BUTTON INTERACTS ON POST 
 
   // Close comments if clicking outside newsfeed area (not just comments or textarea)
+  // Need to edit - Comment botton still closes comments section. 
+  // After posting comment keep comments open. Add Close comments button. 
+
   useEffect(() => {
+
     function handleClickOutside(event) {
       if (
         newsfeedRef.current &&
         !newsfeedRef.current.contains(event.target) &&
         visibleCommentsPostId !== null
-      ) {
-        setVisibleCommentsPostId(null);
-        setPostText('');
-        setPostMedia(null);
+       ) {
+          setVisibleCommentsPostId(null);
+          setPostText('');
+          setPostMedia(null);
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [visibleCommentsPostId]);
+   }, [visibleCommentsPostId]
 
+  );
+
+
+  // LOGIN AND SIGN UP FORMS ARE FOR LOGIN AND SIGNUP SCREEN
   // Login submit handler
   const handleLogin = (e) => {
     e.preventDefault();
@@ -375,7 +390,7 @@ function App() {
     }
   };
 
-  // Logout handler
+  // Logout handler - PASSWORDS USER Ect 
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser('');
@@ -391,7 +406,7 @@ function App() {
     setDislikedPosts([]);
     setSharedPosts([]);
   };
-
+   
   // Login form JSX (unchanged)
   const loginForm = (
     <form
@@ -593,12 +608,16 @@ function App() {
     </form>
   );
 
-  // Fixed Post Widget at bottom with Upload button added
+
+  // POST WIDGET - BOTTOM OF SCREEN POST WIDGET - BOTTOM OF SCREEN POST WIDGET 
+   // POST WIDGET - BOTTOM OF SCREEN POST WIDGET - BOTTOM OF SCREEN POST WIDGET 
+    // POST WIDGET - BOTTOM OF SCREEN POST WIDGET - BOTTOM OF SCREEN POST WIDGET 
+     // POST WIDGET - BOTTOM OF SCREEN POST WIDGET - BOTTOM OF SCREEN POST WIDGET 
   const postWidget = (
     <section
       style={{
         position: 'fixed',
-        bottom: '50px',
+        bottom: '30px',
         left: 0,
         width: '100%',
         backgroundColor: '#7da59c',
@@ -607,9 +626,10 @@ function App() {
         boxSizing: 'border-box',
         display: 'flex',
         justifyContent: 'center',
-        zIndex: 1100,
-      }}
-    >
+        zIndex: 1000,
+      }}>
+
+      {/* Text Input Field  */}
       <div
         style={{
           width: '100%',
@@ -618,7 +638,7 @@ function App() {
           flexDirection: 'column',
           gap: '6px',
         }}
-      >
+       >
         <textarea
           ref={textareaRef}
           placeholder={
@@ -640,13 +660,9 @@ function App() {
           }}
         />
 
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-          }}
-        >
+        <div style={{display: 'flex', alignItems: 'center', gap: '10px',}}> 
+       
+          {/* TOGGLE FOR THE NAV BAR USELESS AT THE MOMENT  */}
           <button
             onClick={handleToggle}
             style={{
@@ -697,10 +713,7 @@ function App() {
           </button>
 
           {/* Hidden file input */}
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: 'none' }}
+          <input type="file" ref={fileInputRef} style={{ display: 'none' }}
             onChange={(e) => {
               const file = e.target.files[0];
               if (file) {
@@ -717,6 +730,7 @@ function App() {
                 marginLeft: 'auto',
                 padding: '6px 12px',
                 backgroundColor: '#e53935',
+                display: 'flex-end',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '5px',
@@ -727,8 +741,7 @@ function App() {
               aria-label="Delete All Posts"
             >
               Delete All Posts
-            </button>
-          )}
+            </button>)}
         </div>
 
         {/* Show selected media file name if any */}
@@ -764,9 +777,11 @@ function App() {
           {visibleCommentsPostId !== null ? 'Comment' : 'Post'}
         </button>
       </div>
+
     </section>
   );
 
+  
   const mainContentStyle = {
     flex: 1,
     display: 'flex',
@@ -778,6 +793,7 @@ function App() {
     overflowY: 'auto',
   };
 
+  // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
   const mainApp = (
     <div
       className="app-container"
@@ -792,253 +808,37 @@ function App() {
       ref={newsfeedRef}
     >
       <main style={mainContentStyle}>
-        <section
-          style={{
-            width: '100%',
-            maxWidth: '600px',
-            marginBottom: '20px',
-          }}
-          ref={commentsRef}
-        >
-          {posts.map((post) => (
-            <article
-              key={post.id}
-              style={{
-                marginBottom: '20px',
-                backgroundColor: '#c5cdda',
-                padding: '15px',
-                borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                position: 'relative',
-                overflowWrap: 'break-word',
-              }}
-            >
-              <h3>{post.username}</h3>
-              <p>{post.content}</p>
+        
 
-              {/* Show media if any */}
-              {post.media && (
-                <div style={{ marginTop: '10px' }}>
-                  {/* Display media based on type */}
-                  {post.media.match(/\.(jpeg|jpg|gif|png)$/i) ? (
-                    <img
-                      src={post.media}
-                      alt="Post media"
-                      style={{ maxWidth: '100%', borderRadius: '8px' }}
-                    />
-                  ) : post.media.match(/\.(mp4|webm|ogg)$/i) ? (
-                    <video
-                      controls
-                      src={post.media}
-                      style={{ maxWidth: '100%', borderRadius: '8px' }}
-                    />
-                  ) : post.media.match(/\.(mp3|wav|ogg)$/i) ? (
-                    <audio controls src={post.media} style={{ width: '100%' }} />
-                  ) : (
-                    <a
-                      href={post.media}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: '#1976d2' }}
-                    >
-                      {post.mediaName || 'Download file'}
-                    </a>
-                  )}
-                </div>
-              )}
+        <Articles
+          posts={posts}
+          commentsRef={commentsRef}
+          currentUser={currentUser}
+          handleDeletePost={handleDeletePost}
+          handleLike={handleLike}
+          handleDislike={handleDislike}
+          handleCommentClick={handleCommentClick}
+          handleShare={handleShare}
+          likedPosts={likedPosts}
+          dislikedPosts={dislikedPosts}
+          visibleCommentsPostId={visibleCommentsPostId}
+          handleCommentLike={handleCommentLike}
+          handleCommentDislike={handleCommentDislike}
+          />
 
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '10px',
-                  right: '10px',
-                  display: 'flex',
-                  gap: '6px',
-                }}
-              >
-                {(currentUser === 'SecurityGuy' || post.username === currentUser) && (
-                  <button
-                    onClick={() => handleDeletePost(post.id)}
-                    style={{
-                      backgroundColor: '#e53935',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      padding: '4px 8px',
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                    }}
-                    aria-label="Delete post"
-                  >
-                    Delete
-                  </button>
-                )}
-
-                <button
-                  onClick={() => handleLike(post.id)}
-                  style={{
-                    backgroundColor: likedPosts.includes(post.id) ? '#2e7d32' : '#4caf50',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    padding: '4px 8px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                  }}
-                  aria-pressed={likedPosts.includes(post.id)}
-                  aria-label="Like post"
-                >
-                  Like
-                </button>
-
-                <button
-                  onClick={() => handleDislike(post.id)}
-                  style={{
-                    backgroundColor: dislikedPosts.includes(post.id) ? '#b71c1c' : '#f44336',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    padding: '4px 8px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                  }}
-                  aria-pressed={dislikedPosts.includes(post.id)}
-                  aria-label="Dislike post"
-                >
-                  Dislike
-                </button>
-
-                <button
-                  onClick={() => handleCommentClick(post.id)}
-                  style={{
-                    backgroundColor: '#2196f3',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    padding: '4px 8px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                  }}
-                  aria-pressed={visibleCommentsPostId === post.id}
-                  aria-label="Comment on post"
-                >
-                  Comment
-                </button>
-
-                <button
-                  onClick={() => handleShare(post.id)}
-                  style={{
-                    backgroundColor: '#9c27b0',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    padding: '4px 8px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                  }}
-                  aria-label="Share post"
-                >
-                  Share
-                </button>
-              </div>
-
-              <div
-                style={{
-                  marginTop: '12px',
-                  fontSize: '14px',
-                  color: '#555',
-                  display: 'flex',
-                  gap: '15px',
-                }}
-              >
-                <span>👍 {post.likes}</span>
-                <span>👎 {post.dislikes}</span>
-                <span>💬 {post.comments.length}</span>
-                <span>🔄 {post.shares}</span>
-              </div>
-
-              {visibleCommentsPostId === post.id && (
-                <div
-                  style={{
-                    marginTop: '10px',
-                    maxHeight: '150px',
-                    overflowY: 'auto',
-                    backgroundColor: '#f9f9f9',
-                    borderRadius: '5px',
-                    padding: '10px',
-                    fontSize: '13px',
-                    color: '#333',
-                    overflowWrap: 'break-word',
-                  }}
-                >
-                  {post.comments.length === 0 && (
-                    <div style={{ fontStyle: 'italic', color: '#777' }}>
-                      No comments yet.
-                    </div>
-                  )}
-                  {post.comments.map((comment) => {
-                    const liked = comment.likedBy?.includes(currentUser);
-                    const disliked = comment.dislikedBy?.includes(currentUser);
-                    return (
-                      <div
-                        key={comment.id}
-                        style={{
-                          marginBottom: '8px',
-                          borderBottom: '1px solid #ddd',
-                          paddingBottom: '4px',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <div>
-                          <strong>{comment.username}:</strong> {comment.content}
-                        </div>
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <button
-                            onClick={() => handleCommentLike(post.id, comment.id)}
-                            style={{
-                              backgroundColor: liked ? '#2e7d32' : '#4caf50',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '4px',
-                              padding: '2px 6px',
-                              cursor: 'pointer',
-                              fontSize: '11px',
-                            }}
-                            aria-pressed={liked}
-                            aria-label="Like comment"
-                          >
-                            👍 {comment.likes || 0}
-                          </button>
-                          <button
-                            onClick={() => handleCommentDislike(post.id, comment.id)}
-                            style={{
-                              backgroundColor: disliked ? '#b71c1c' : '#f44336',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '4px',
-                              padding: '2px 6px',
-                              cursor: 'pointer',
-                              fontSize: '11px',
-                            }}
-                            aria-pressed={disliked}
-                            aria-label="Dislike comment"
-                          >
-                            👎 {comment.dislikes || 0}
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </article>
-          ))}
-        </section>
       </main>
 
       {postWidget}
+
+      {/* Navigation Bar At Bootom of App Screen  */}
+      {/* Navigation Bar At Bootom of App Screen  */}
+      {/* Navigation Bar At Bootom of App Screen  */}
+      {/* Navigation Bar At Bootom of App Screen  */}
+      {/* Navigation Bar At Bootom of App Screen  */}
+      {/* Navigation Bar At Bootom of App Screen  */}
+      {/* Navigation Bar At Bootom of App Screen  */}
+      {/* Navigation Bar At Bootom of App Screen  */}
+
 
       <nav
         style={{
@@ -1051,14 +851,15 @@ function App() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          padding: '5px 2px',
+          padding: '5px 5px',
           boxShadow: '0 -1px 5px rgba(0,0,0,0.1)',
           zIndex: 1000,
           gap: '5px',
           fontFamily: 'Arial, sans-serif',
         }}
-      >
-        <div style={{ fontWeight: 'bold', color: '#fafdfd', marginRight: 'auto' }}>
+      > 
+          {/* //BUTTONS INSIDE NAV */}
+        <div style={{ fontWeight: 'bold', color: '#fafdfd', marginTrim: 'auto' }}>
           {currentUser}
         </div>
 
@@ -1080,6 +881,7 @@ function App() {
           <li style={{ cursor: 'pointer' }}>Messages</li>
           <li style={{ cursor: 'pointer' }}>Settings</li>
           <li>
+            {/* LOG OUT BUTTON  */}
             <button
               onClick={handleLogout}
               style={{
