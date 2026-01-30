@@ -83,14 +83,14 @@ export default function Articles({
               top: "10px",
               right: "10px",
               display: "flex",
-              justifyContent: "end",
+              justifyContent: "center",
               gap: "6px",
               margin: "5px",
               padding: "20px",
             }}
           >
         
-
+             {/* LIKE BUTTON  */}
             <button
               onClick={() => handleLike(post.id)}
               style={{
@@ -98,7 +98,8 @@ export default function Articles({
                 color: "#fff",
                 border: "none",
                 borderRadius: "4px",
-                padding: "4px 8px",
+                padding: "3% 10%",
+                      margin: "0px 15px",
                 cursor: "pointer",
                 fontSize: "12px",
               }}
@@ -107,7 +108,7 @@ export default function Articles({
             >
               Like
             </button>
-
+                  {/* DISLIKE BUTTON */}
             <button
               onClick={() => handleDislike(post.id)}
               style={{
@@ -115,7 +116,8 @@ export default function Articles({
                 color: "#fff",
                 border: "none",
                 borderRadius: "4px",
-                padding: "4px 8px",
+                padding: "3% 10%",
+                     margin: "0px 15px",
                 cursor: "pointer",
                 fontSize: "12px",
               }}
@@ -125,6 +127,10 @@ export default function Articles({
               Dislike
             </button>
 
+
+
+                {/* COMMENT */}
+
             <button
               onClick={() => handleCommentClick(post.id)}
               style={{
@@ -132,7 +138,8 @@ export default function Articles({
                 color: "#fff",
                 border: "none",
                 borderRadius: "4px",
-                padding: "4px 8px",
+                 padding: "3% 10%",
+                 margin: "0px 15px",
                 cursor: "pointer",
                 fontSize: "12px",
               }}
@@ -151,7 +158,8 @@ export default function Articles({
                     justifyContent: "end",
                     border: "none",
                     borderRadius: "4px",
-                    padding: "4px 8px",
+                       padding: "3% 13%",
+                     margin: "0px 8px",
                     cursor: "pointer",
                     fontSize: "12px",
                }}
@@ -202,10 +210,10 @@ export default function Articles({
   }}>
 
   {/* THESE ARE THE COUNTERS FOR THE LIKES ON THE POTS  */}
-  <span style={{margin: "1%",}}>👍 {post.likes}</span>
-  <span style={{margin: "1%",}}>👎 {post.dislikes}</span>
-  <span style={{margin: "1%",}}>💬 {post.comments.length}</span>
-  <span style={{margin: "1%",}}>🔄 {post.shares}</span>
+  <span style={{margin: "1% 5%",}}>👍 {post.likes}</span>
+  <span style={{margin: "1% 5%",}}>👎 {post.dislikes}</span>
+  <span style={{margin: "1% 5%",}}>💬 {post.comments.length}</span>
+  <span style={{margin: "1% 5%",}}>🔄 {post.shares}</span>
 
 </div>
 
@@ -255,7 +263,11 @@ export default function Articles({
                         </div>
 
                         <div style={{ display: "flex", gap: "6px" }}>
-                      <button onClick={() => handleCommentLike(post.id, comment.id)}
+
+
+
+                          {/* COMMENT LIKE BUTTON  */}
+                           <button onClick={() => handleCommentLike(post.id, comment.id)}
                         style={{
                           backgroundColor: liked ? "#2e7d32" : "#4caf50",
                           color: "#fff",
@@ -267,16 +279,16 @@ export default function Articles({
                         }} aria-pressed={liked} aria-label="Like comment">
 
                         👍 {comment.likes || 0}
-                      </button>
-
-                      <button
+                           </button>
+                          {/* COMMENT LIKE BUTTON  */}
+                             <button
                         onClick={() => handleCommentDislike(post.id, comment.id)}
                         style={{
                           backgroundColor: disliked ? "#b71c1c" : "#f44336",
                           color: "#fff",
                           border: "none",
                           borderRadius: "4px",
-                          padding: "2px 6px",
+                           padding: "4px 20%",
                           cursor: "pointer",
                           fontSize: "11px",
                         }}
@@ -284,7 +296,7 @@ export default function Articles({
                         aria-label="Dislike comment"
                       >
                         👎 {comment.dislikes || 0}
-                      </button>
+                              </button>
 
                         </div>
 
