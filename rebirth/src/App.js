@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Articles from "./Components/Articles";
+import Nav from './Components/Nav';
+
+
 
 function App() {
 
+  
   // Initial default users
   const defaultUsers = {
     OperaGuy: 'Aaah!',
@@ -142,7 +146,9 @@ function App() {
   };
 
 
-    // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
+  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
+  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
+  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
   const handleDeletePost = (postId) => {
     setPosts(posts.filter((post) => post.id !== postId));
     if (visibleCommentsPostId === postId) {
@@ -327,11 +333,21 @@ function App() {
       })
     );
   };
-// ALL BUTTON INTERACTS ON POST 
+  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
+  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
+  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
+
+
+  // ALL BUTTON INTERACTS ON POST 
+
 
   // Close comments if clicking outside newsfeed area (not just comments or textarea)
   // Need to edit - Comment botton still closes comments section. 
   // After posting comment keep comments open. Add Close comments button. 
+  // Login form JSX (unchanged)
+  
+
+
 
   useEffect(() => {
 
@@ -357,8 +373,6 @@ function App() {
   );
 
 
-  // LOGIN AND SIGN UP FORMS ARE FOR LOGIN AND SIGNUP SCREEN
-  // Login submit handler
   const handleLogin = (e) => {
     e.preventDefault();
     if (users[loginUsername] && users[loginUsername] === loginPassword) {
@@ -371,8 +385,7 @@ function App() {
       setLoginError('Invalid username or password');
     }
   };
-
-  // Signup submit handler
+  // Handle signup submit
   const handleSignup = (e) => {
     e.preventDefault();
     if (users[signupUsername]) {
@@ -389,8 +402,7 @@ function App() {
       setIsSigningUp(false);
     }
   };
-
-  // Logout handler - PASSWORDS USER Ect 
+  // Handle logout
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser('');
@@ -406,8 +418,7 @@ function App() {
     setDislikedPosts([]);
     setSharedPosts([]);
   };
-   
-  // Login form JSX (unchanged)
+  // Login form JSX
   const loginForm = (
     <form
       onSubmit={handleLogin}
@@ -501,8 +512,7 @@ function App() {
       </button>
     </form>
   );
-
-  // Signup form JSX (unchanged)
+  // Signup form JSX
   const signupForm = (
     <form
       onSubmit={handleSignup}
@@ -609,97 +619,136 @@ function App() {
   );
 
 
-  // POST WIDGET - BOTTOM OF SCREEN POST WIDGET - BOTTOM OF SCREEN POST WIDGET 
-   // POST WIDGET - BOTTOM OF SCREEN POST WIDGET - BOTTOM OF SCREEN POST WIDGET 
-    // POST WIDGET - BOTTOM OF SCREEN POST WIDGET - BOTTOM OF SCREEN POST WIDGET 
-     // POST WIDGET - BOTTOM OF SCREEN POST WIDGET - BOTTOM OF SCREEN POST WIDGET 
-  const postWidget = (
-    <section
-      style={{
-        position: 'fixed',
-        bottom: '30px',
-        left: 0,
-        width: '100%',
-        backgroundColor: '#7da59c',
-        boxShadow: '0 -2px 8px rgba(0,0,0,0.1)',
-        padding: '15px 20px',
-        boxSizing: 'border-box',
-        display: 'flex',
-        justifyContent: 'center',
-        zIndex: 1000,
-      }}>
 
-      {/* Text Input Field  */}
-      <div
+  const postWidget = (
+  <section
+    style={{
+      position: 'fixed',
+      bottom: '30px',
+      left: 0,
+      width: '100%',
+      backgroundColor: '#7da59c',
+      boxShadow: '0 -2px 8px rgba(0,0,0,0.1)',
+      padding: '15px 20px',
+      boxSizing: 'border-box',
+      display: 'flex',
+      justifyContent: 'center',
+      zIndex: 1000,
+    }}
+  >
+    <div
+      style={{
+        width: '100%',
+        maxWidth: '600px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '6px',
+      }}
+    >
+      <textarea
+        ref={textareaRef}
+        placeholder={
+          visibleCommentsPostId !== null
+            ? 'Write a comment...'
+            : 'Post To The World!'
+        }
+        value={postText}
+        onChange={(e) => setPostText(e.target.value)}
         style={{
           width: '100%',
-          maxWidth: '600px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '6px',
+          height: '60px',
+          padding: '10px',
+          fontSize: '16px',
+          borderRadius: '5px',
+          border: '1px solid #ccc',
+          resize: 'none',
+          boxSizing: 'border-box',
         }}
-       >
-        <textarea
-          ref={textareaRef}
-          placeholder={
-            visibleCommentsPostId !== null
-              ? 'Write a comment...'
-              : "Post To The World!"
-          }
-          value={postText}
-          onChange={(e) => setPostText(e.target.value)}
-          style={{
-            width: '100%',
-            height: '60px',
-            padding: '10px',
-            fontSize: '16px',
-            borderRadius: '5px',
-            border: '1px solid #ccc',
-            resize: 'none',
-            boxSizing: 'border-box',
+      />
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {/* Toggle Button */}
+        <button
+          onClick={() => {
+            if (toggle && postText.trim() !== '') {
+              // Prevent toggling off if text is not empty
+              return;
+            }
+            setToggle((prev) => !prev);
           }}
+          style={{
+            width: '40px',
+            height: '24px',
+            borderRadius: '12px',
+            border: '1px solid #ccc',
+            backgroundColor: toggle ? '#1877f2' : '#4e4848',
+            cursor: 'pointer',
+            position: 'relative',
+            outline: 'none',
+            transition: 'background-color 0.3s',
+          }}
+          aria-pressed={toggle}
+          aria-label="Toggle Post to all"
+        >
+          <span
+            style={{
+              position: 'absolute',
+              top: '2px',
+              left: toggle ? '18px' : '2px',
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              background: '#fff',
+              transition: 'left 0.3s',
+            }}
+          />
+        </button>
+
+        <span style={{ fontSize: '16px', userSelect: 'none' }}>Post to all</span>
+
+        {/* Upload Button */}
+
+        <button
+          onClick={() => fileInputRef.current && fileInputRef.current.click()}
+          style={{
+            padding: '6px 12px',
+            backgroundColor: '#1976d2',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '14px',
+          }}
+          aria-label="Upload media"
+        >
+          Add Media
+        </button>
+
+            
+
+
+        {/* Hidden file input */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (file) {
+              setPostMedia(file);
+            }
+          }}
+          accept="*/*"
         />
 
-        <div style={{display: 'flex', alignItems: 'center', gap: '10px',}}> 
-       
-          {/* TOGGLE FOR THE NAV BAR USELESS AT THE MOMENT  */}
+        {currentUser === 'SecurityGuy' && (
           <button
-            onClick={handleToggle}
+            onClick={handleDeleteAllPosts}
             style={{
-              width: '40px',
-              height: '24px',
-              borderRadius: '12px',
-              border: '1px solid #ccc',
-              backgroundColor: toggle ? '#1877f2' : '#4e4848',
-              cursor: 'pointer',
-              position: 'relative',
-              outline: 'none',
-              transition: 'background-color 0.3s',
-            }}
-            aria-pressed={toggle}
-            aria-label="Toggle Post to all"
-          >
-            <span
-              style={{
-                position: 'absolute',
-                top: '2px',
-                left: toggle ? '18px' : '2px',
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                background: '#fff',
-                transition: 'left 0.3s',
-              }}
-            />
-          </button>
-          <span style={{ fontSize: '16px', userSelect: 'none' }}>Post to all</span>
-
-          {/* Upload Button */}
-          <button
-            onClick={() => fileInputRef.current && fileInputRef.current.click()}
-            style={{
+              marginLeft: 'auto',
               padding: '6px 12px',
-              backgroundColor: '#1976d2',
+              backgroundColor: '#e53935',
               color: '#fff',
               border: 'none',
               borderRadius: '5px',
@@ -707,81 +756,83 @@ function App() {
               fontWeight: 'bold',
               fontSize: '14px',
             }}
-            aria-label="Upload media"
+            aria-label="Delete All Posts"
           >
-            Add Media
+            Delete All Posts
           </button>
-
-          {/* Hidden file input */}
-          <input type="file" ref={fileInputRef} style={{ display: 'none' }}
-            onChange={(e) => {
-              const file = e.target.files[0];
-              if (file) {
-                setPostMedia(file);
-              }
-            }}
-            accept="*/*"
-          />
-
-          {currentUser === 'SecurityGuy' && (
-            <button
-              onClick={handleDeleteAllPosts}
-              style={{
-                marginLeft: 'auto',
-                padding: '6px 12px',
-                backgroundColor: '#e53935',
-                display: 'flex-end',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                fontSize: '14px',
-              }}
-              aria-label="Delete All Posts"
-            >
-              Delete All Posts
-            </button>)}
-        </div>
-
-        {/* Show selected media file name if any */}
-        {postMedia && (
-          <div
-            style={{
-              fontSize: '14px',
-              color: '#555',
-              padding: '6px 10px',
-              backgroundColor: '#f0f0f0',
-              borderRadius: '5px',
-              maxWidth: '600px',
-              overflowWrap: 'break-word',
-            }}
-          >
-            Selected file: {postMedia.name}
-          </div>
         )}
-
-        <button
-          onClick={handlePost}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#1877f2',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            width: '100%',
-            fontWeight: 'bold',
-          }}
-        >
-          {visibleCommentsPostId !== null ? 'Comment' : 'Post'}
-        </button>
       </div>
 
-    </section>
+        {/* VIDEO PICTURE AUDIO MP3 MP4 MEDIA IN POST  DD MEDIA CONFIRM */}
+      {/* Show selected media file name if any */}
+      {postMedia && (
+        <div
+          style={{
+            fontSize: '14px',
+            color: '#af4a4a',
+            padding: '6px 10px',
+            backgroundColor: '#520741',
+            borderRadius: '5px',
+            maxWidth: '600px',
+            overflowWrap: 'break-word',
+          }}
+        >
+          File: {postMedia.name}
+        </div>
+      )}
+
+      <button
+        onClick={() => {
+          if (postText.trim() === '') {
+            // Textarea empty: switch back to Post mode
+            setVisibleCommentsPostId(null);
+            if (textareaRef.current) textareaRef.current.blur();
+          } else {
+            // Textarea not empty: post comment and keep comment mode active
+            handlePost();
+            if (textareaRef.current) textareaRef.current.blur();
+            // Do NOT clear visibleCommentsPostId here to keep comment section open
+          }
+        }}
+        style={{
+          padding: '10px 20px',
+          backgroundColor: '#1877f2',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          width: '100%',
+          fontWeight: 'bold',
+        }}
+      >
+        {(visibleCommentsPostId !== null || postText.trim() !== '') ? 'Comment' : 'Post'}
+      </button>
+    </div>
+  </section>
   );
 
+  const NavigationBar = () => {
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
+
+  return (
+    <nav
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '10px 20px',
+        backgroundColor: '#eee',
+        justifyContent: 'space-between',
+      }}
+    >
+      <div>Logo</div>
   
+    </nav>
+  );
+  };
+
+
   const mainContentStyle = {
     flex: 1,
     display: 'flex',
@@ -794,115 +845,22 @@ function App() {
   };
 
   // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
+
   const mainApp = (
-    <div
-      className="app-container"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        fontFamily: 'Arial, sans-serif',
-        backgroundColor: '#254042',
-        paddingBottom: '60px',
-      }}
-      ref={newsfeedRef}
-    >
+
+
+    <div className="app-container" style={{display: 'flex', flexDirection: 'column', minHeight: '100vh', fontFamily: 'Arial, sans-serif', backgroundColor: '#254042', paddingBottom: '60px',}}ref={newsfeedRef}>
+
       <main style={mainContentStyle}>
-        
-
-        <Articles
-          posts={posts}
-          commentsRef={commentsRef}
-          currentUser={currentUser}
-          handleDeletePost={handleDeletePost}
-          handleLike={handleLike}
-          handleDislike={handleDislike}
-          handleCommentClick={handleCommentClick}
-          handleShare={handleShare}
-          likedPosts={likedPosts}
-          dislikedPosts={dislikedPosts}
-          visibleCommentsPostId={visibleCommentsPostId}
-          handleCommentLike={handleCommentLike}
-          handleCommentDislike={handleCommentDislike}
-          />
-
+        <Articles posts={posts} commentsRef={commentsRef} currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
       </main>
 
       {postWidget}
-
-      {/* Navigation Bar At Bootom of App Screen  */}
-      {/* Navigation Bar At Bootom of App Screen  */}
-      {/* Navigation Bar At Bootom of App Screen  */}
-      {/* Navigation Bar At Bootom of App Screen  */}
-      {/* Navigation Bar At Bootom of App Screen  */}
-      {/* Navigation Bar At Bootom of App Screen  */}
-      {/* Navigation Bar At Bootom of App Screen  */}
-      {/* Navigation Bar At Bootom of App Screen  */}
-
-
-      <nav
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          backgroundColor: '#687e7c',
-          borderTop: '1px solid #ddd',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '5px 5px',
-          boxShadow: '0 -1px 5px rgba(0,0,0,0.1)',
-          zIndex: 1000,
-          gap: '5px',
-          fontFamily: 'Arial, sans-serif',
-        }}
-      > 
-          {/* //BUTTONS INSIDE NAV */}
-        <div style={{ fontWeight: 'bold', color: '#fafdfd', marginTrim: 'auto' }}>
-          {currentUser}
-        </div>
-
-        <ul
-          style={{
-            display: 'flex',
-            listStyle: 'none',
-            margin: 0,
-            padding: 0,
-            gap: '40px',
-            alignItems: 'center',
-          }}
-        >
-          <li style={{ cursor: 'pointer', fontWeight: 'bold', color: '#1877f2' }}>
-            Home
-          </li>
-          <li style={{ cursor: 'pointer' }}>Profile</li>
-          <li style={{ cursor: 'pointer' }}>Friends</li>
-          <li style={{ cursor: 'pointer' }}>Messages</li>
-          <li style={{ cursor: 'pointer' }}>Settings</li>
-          <li>
-            {/* LOG OUT BUTTON  */}
-            <button
-              onClick={handleLogout}
-              style={{
-                backgroundColor: '#e53935',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '5px',
-                padding: '6px 12px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                fontSize: '14px',
-              }}
-              aria-label="Log Out"
-            >
-              Log Out
-            </button>
-          </li>
-        </ul>
-      </nav>
+      <Nav currentUser={currentUser} handleLogout={handleLogout} />
     </div>
+    
   );
+
 
   // Render login or signup form or main app
   if (!isLoggedIn) {
@@ -919,6 +877,7 @@ function App() {
         }}
       >
         {isSigningUp ? signupForm : loginForm}
+
       </div>
     );
   }
