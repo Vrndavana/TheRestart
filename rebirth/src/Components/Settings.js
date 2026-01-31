@@ -27,8 +27,28 @@ export default function Settings() {
     }, {})
   );
 
+  // Track which platform's "Add Group" UI is open
+  const [addingGroupFor, setAddingGroupFor] = useState(null);
+
+  // Groups per platform (demo static data)
+  // In real app, you'd fetch this from platform API after connection
+  const platformGroups = useMemo(() => ({
+    Facebook: ['Personal Page', 'Family', 'Work', 'Friends'],
+    YouTube: ['Personal Page', 'Gaming Channel', 'Vlogs', 'Tech Reviews'],
+    Twitter: ['Personal Page', 'News', 'Sports', 'Tech Enthusiasts'],
+    Reddit: ['Personal Page', 'r/reactjs', 'r/javascript', 'r/webdev'],
+    Instagram: ['Personal Page', 'Travel', 'Foodies', 'Photography'],
+  }), []);
+
+  // Track enabled groups per platform (default to "Personal Page" if connected)
+  const [enabledGroups, setEnabledGroups] = useState(() =>
+    availablePlatforms.reduce((acc, p) => {
+      acc[p] = ['Personal Page'];
+      return acc;
+    }, {})
+  );
+
   const handleConnect = (platform) => {
-    // Demo: "connect" by marking connected and adding to platforms list
     setConnections((prev) => ({ ...prev, [platform]: true }));
 
     setPlatforms((prev) => {
@@ -36,14 +56,41 @@ export default function Settings() {
       return [...prev, platform];
     });
 
-    // In a real app, you'd kick off OAuth here, e.g.:
-    // startOAuth(platform)
+    // Ensure default group is set on connect
+    setEnabledGroups((prev) => {
+      if (prev[platform] && prev[platform].length > 0) return prev;
+      return { ...prev, [platform]: ['Personal Page'] };
+    });
   };
 
   const handleDisconnect = (platform) => {
-    // Optional: allow disconnect (NOT for "The App")
     setConnections((prev) => ({ ...prev, [platform]: false }));
     setPlatforms((prev) => prev.filter((p) => p !== platform));
+    setEnabledGroups((prev) => {
+      const copy = { ...prev };
+      delete copy[platform];
+      return copy;
+    });
+    if (addingGroupFor === platform) setAddingGroupFor(null);
+  };
+
+  const toggleGroupSelection = (platform, group) => {
+    setEnabledGroups((prev) => {
+      const currentGroups = prev[platform] || [];
+      if (currentGroups.includes(group)) {
+        // Remove group but never remove "Personal Page"
+        if (group === 'Personal Page') return prev;
+        return {
+          ...prev,
+          [platform]: currentGroups.filter((g) => g !== group),
+        };
+      } else {
+        return {
+          ...prev,
+          [platform]: [...currentGroups, group],
+        };
+      }
+    });
   };
 
   return (
@@ -114,7 +161,7 @@ export default function Settings() {
         </select>
       </div>
 
-      {/* Platforms Section (Updated) */}
+      {/* Platforms Section (Groups inside Connected Platform) */}
       <div style={{ marginBottom: '16px' }}>
         <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
           Platforms:
@@ -127,42 +174,144 @@ export default function Settings() {
               key={platform}
               style={{
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '10px',
-                marginBottom: '6px',
+                flexDirection: 'column',
+                gap: '8px',
+                marginBottom: '12px',
                 backgroundColor: '#f0f0f0',
-                padding: '8px 10px',
+                padding: '12px 14px',
                 borderRadius: '6px',
               }}
             >
-              <span style={{ fontWeight: platform === 'The App' ? 700 : 500 }}>
-                {platform}
-              </span>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '10px',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <span style={{ fontWeight: platform === 'The App' ? 700 : 500, fontSize: '16px' }}>
+                  {platform}
+                </span>
 
-              {platform === 'The App' ? (
-                <span style={{ fontSize: '12px', color: '#2f4f4f' }}>Default</span>
-              ) : (
-                <button
-                  onClick={() => handleDisconnect(platform)}
-                  aria-label={`Disconnect ${platform}`}
+                {platform === 'The App' ? (
+                  <span style={{ fontSize: '12px', color: '#2f4f4f' }}>Default</span>
+                ) : (
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <button
+                      onClick={() => handleDisconnect(platform)}
+                      aria-label={`Disconnect ${platform}`}
+                      style={{
+                        backgroundColor: '#e53935',
+                        border: 'none',
+                        color: 'white',
+                        borderRadius: '4px',
+                        padding: '6px 12px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      Disconnect
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        addingGroupFor === platform
+                          ? setAddingGroupFor(null)
+                          : setAddingGroupFor(platform)
+                      }
+                      aria-expanded={addingGroupFor === platform}
+                      aria-controls={`groups-list-${platform}`}
+                      style={{
+                        backgroundColor: '#4a90e2',
+                        border: 'none',
+                        color: 'white',
+                        borderRadius: '4px',
+                        padding: '6px 12px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {addingGroupFor === platform ? 'Close Groups' : 'Add Group'}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Show enabled groups summary */}
+              {platform !== 'The App' && enabledGroups[platform] && (
+                <div
                   style={{
-                    backgroundColor: '#e53935',
-                    border: 'none',
-                    color: 'white',
-                    borderRadius: '4px',
-                    padding: '6px 10px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
+                    fontSize: '13px',
+                    color: '#555',
+                    fontStyle: 'italic',
+                    marginTop: '-4px',
+                    marginBottom: '8px',
                   }}
                 >
-                  Disconnect
-                </button>
+                  Enabled Groups: {enabledGroups[platform].join(', ')}
+                </div>
+              )}
+
+              {/* Groups selection UI inside connected platform */}
+              {addingGroupFor === platform && platform !== 'The App' && connections[platform] && (
+                <div
+                  id={`groups-list-${platform}`}
+                  aria-live="polite"
+                  style={{
+                    backgroundColor: '#e3f2fd',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    maxHeight: '200px',
+                    overflowY: 'auto',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 'bold',
+                      marginBottom: '8px',
+                      fontSize: '15px',
+                    }}
+                  >
+                    Select Groups for {platform}
+                  </div>
+                  <ul style={{ listStyle: 'none', paddingLeft: 0, margin: 0 }}>
+                    {platformGroups[platform].map((group) => {
+                      const checked =
+                        enabledGroups[platform]?.includes(group) || false;
+                      const isPersonalPage = group === 'Personal Page';
+
+                      return (
+                        <li key={group} style={{ marginBottom: '6px' }}>
+                          <label
+                            style={{
+                              cursor: isPersonalPage ? 'default' : 'pointer',
+                              color: isPersonalPage ? '#555' : '#000',
+                              userSelect: 'none',
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              disabled={isPersonalPage}
+                              onChange={() => toggleGroupSelection(platform, group)}
+                              style={{ marginRight: '8px' }}
+                            />
+                            {group}
+                            {isPersonalPage && ' (default)'}
+                          </label>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               )}
             </li>
           ))}
         </ul>
 
+        {/* Connect Another Platform Section */}
         <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>
           Connect Another Platform
         </div>
