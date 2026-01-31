@@ -2,46 +2,33 @@ import React, { useState, useEffect, useRef } from 'react';
 import Articles from "./Components/Articles";
 import Profile from "./Components/Profile";
 import Nav from './Components/Nav';
-import {BrowserRouter, Routes, Route } from 'react-router-dom';
-
+import PostWidget from './Components/PostWidget';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
 
-  
-  // Initial default users
-  const defaultUsers = {
-    OperaGuy: 'Aaah!',
-    SecurityGuy: 'TheSuperSecurePassword',
-  };
-
+  const defaultUsers = {OperaGuy: 'Aaah!', SecurityGuy: 'TheSuperSecurePassword',};
   // State for users (username: password)
   const [users, setUsers] = useState(defaultUsers);
-
   // Authentication & UI states
   const [isLoggedIn,  setIsLoggedIn]  = useState(false);
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [currentUser, setCurrentUser] = useState('');
-
   // Login form states
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError,    setLoginError]    = useState('');
-
   // Signup form states
   const [signupUsername, setSignupUsername] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupError, setSignupError] = useState('');
   const [usernameTaken, setUsernameTaken] = useState(false);
-
   // Toggle state for "Post to all"
   const [toggle, setToggle] = useState(false);
-
   // Post input state
   const [postText, setPostText] = useState('');
-
   // Media file state for the post being written
   const [postMedia, setPostMedia] = useState(null);
-
   // Posts state: initial posts from John and Jane with counters and comments
   const [posts, setPosts] = useState([
     {
@@ -65,23 +52,18 @@ function App() {
       media: null,
     },
   ]);
-
   // Track posts liked and disliked by current user (store post ids)
   const [likedPosts, setLikedPosts] = useState([]);
   const [dislikedPosts, setDislikedPosts] = useState([]);
-
   // Track posts shared by current user (store post ids)
   const [sharedPosts, setSharedPosts] = useState([]);
-
   // State to track which post's comments are visible
   const [visibleCommentsPostId, setVisibleCommentsPostId] = useState(null);
-
   // Refs for detecting clicks outside comments and textarea
   const commentsRef = useRef(null);
   const textareaRef = useRef(null);
   const newsfeedRef = useRef(null);
   const fileInputRef = useRef(null);
-
   // Handlers
   const handleToggle = () => {
     setToggle(!toggle);
@@ -146,10 +128,29 @@ function App() {
     }
   };
 
+  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js  --- BELOW VVV
+   useEffect(() => {
 
-  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
-  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
-  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
+    function handleClickOutside(event) {
+      if (
+        newsfeedRef.current &&
+        !newsfeedRef.current.contains(event.target) &&
+        visibleCommentsPostId !== null
+       ) {
+          setVisibleCommentsPostId(null);
+          setPostText('');
+          setPostMedia(null);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+   }, [visibleCommentsPostId]
+
+  );
   const handleDeletePost = (postId) => {
     setPosts(posts.filter((post) => post.id !== postId));
     if (visibleCommentsPostId === postId) {
@@ -334,46 +335,9 @@ function App() {
       })
     );
   };
-  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
-  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
-  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js 
+  // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js  - ABOVE ^^^
 
-
-  // ALL BUTTON INTERACTS ON POST 
-
-
-  // Close comments if clicking outside newsfeed area (not just comments or textarea)
-  // Need to edit - Comment botton still closes comments section. 
-  // After posting comment keep comments open. Add Close comments button. 
-  // Login form JSX (unchanged)
-  
-
-
-
-  useEffect(() => {
-
-    function handleClickOutside(event) {
-      if (
-        newsfeedRef.current &&
-        !newsfeedRef.current.contains(event.target) &&
-        visibleCommentsPostId !== null
-       ) {
-          setVisibleCommentsPostId(null);
-          setPostText('');
-          setPostMedia(null);
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-   }, [visibleCommentsPostId]
-
-  );
-
-
+  // Handle login submit
   const handleLogin = (e) => {
     e.preventDefault();
     if (users[loginUsername] && users[loginUsername] === loginPassword) {
@@ -619,217 +583,6 @@ function App() {
     </form>
   );
 
-
-
-  const postWidget = (
-
-  <section
-    style={{
-      position: 'fixed',
-      bottom: '30px',
-      left: 0,
-      width: '100%',
-      backgroundColor: '#7da59c',
-      boxShadow: '0 -2px 8px rgba(0,0,0,0.1)',
-      padding: '15px 20px',
-      boxSizing: 'border-box',
-      display: 'flex',
-      justifyContent: 'center',
-      zIndex: 1000,
-    }}>
-
-
-    <div style={{width: '100%',maxWidth: '600px',display: 'flex',flexDirection: 'column',gap: '6px',}}>
-      
-      <textarea ref={textareaRef}
-        placeholder={
-          visibleCommentsPostId !== null
-            ? 'Write a comment...'
-            : 'Post To The World!'
-        }
-        value={postText} onChange={(e) => setPostText(e.target.value)} style={{ width: '100%', height: '60px', padding: '10px', fontSize: '16px', borderRadius: '5px', border: '1px solid #ccc', resize: 'none', boxSizing: 'border-box',}}
-      />
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        {/* Toggle Button */}
-        <button
-          onClick={() => {
-            if (toggle && postText.trim() !== '') {
-              // Prevent toggling off if text is not empty
-              return;
-            }
-            setToggle((prev) => !prev);
-          }}
-          style={{
-            width: '40px',
-            height: '24px',
-            borderRadius: '12px',
-            border: '1px solid #ccc',
-            backgroundColor: toggle ? '#1877f2' : '#4e4848',
-            cursor: 'pointer',
-            position: 'relative',
-            outline: 'none',
-            transition: 'background-color 0.3s',
-          }}
-          aria-pressed={toggle}
-          aria-label="Toggle Post to all"
-        >
-          <span
-            style={{
-              position: 'absolute',
-              top: '2px',
-              left: toggle ? '18px' : '2px',
-              width: '20px',
-              height: '20px',
-              borderRadius: '50%',
-              background: '#fff',
-              transition: 'left 0.3s',
-            }}
-          />
-        </button>
-
-        <span style={{ fontSize: '16px', userSelect: 'none' }}>Post to all</span>
-
-
-        {/* Upload Button */}
-        <button
-          onClick={() => fileInputRef.current && fileInputRef.current.click()}
-          style={{
-            padding: '6px 12px',
-            backgroundColor: '#1976d2',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            fontSize: '14px',
-          }}
-          aria-label="Upload media"
-        >
-          Add Media
-        </button>
-
-            
-
-
-        {/* Hidden file input */}
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          onChange={(e) => {
-            const file = e.target.files[0];
-            if (file) {
-              setPostMedia(file);
-            }
-          }}
-          accept="*/*"
-        />
-
-
-
-
-        {/* Delete All Posts Button for SecurityGuy */}
-        {currentUser === 'SecurityGuy' && (
-          <button
-            onClick={handleDeleteAllPosts}
-            style={{
-              marginLeft: 'auto',
-              padding: '6px 12px',
-              backgroundColor: '#e53935',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '14px',
-            }}
-            aria-label="Delete All Posts"
-          >
-            Delete All Posts
-          </button>
-        )}
-
-      </div>
-
-
-
-        {/* VIDEO PICTURE AUDIO MP3 MP4 MEDIA IN POST  DD MEDIA CONFIRM */}
-      {/* Show selected media file name if any */}
-      {postMedia && (
-        <div
-          style={{
-            fontSize: '14px',
-            color: '#af4a4a',
-            padding: '6px 10px',
-            backgroundColor: '#520741',
-            borderRadius: '5px',
-            maxWidth: '600px',
-            overflowWrap: 'break-word',
-          }}
-        >
-          File: {postMedia.name}
-        </div>
-      )}
-
-
-        {/* Button handle Post for Post or Comment */}
-      <button
-        onClick={() => {
-          if (postText.trim() === '') {
-            // Textarea empty: switch back to Post mode
-            setVisibleCommentsPostId(null);
-            if (textareaRef.current) textareaRef.current.blur();
-          } else {
-            // Textarea not empty: post comment and keep comment mode active
-            handlePost();
-            if (textareaRef.current) textareaRef.current.blur();
-            // Do NOT clear visibleCommentsPostId here to keep comment section open
-          }
-        }}
-        style={{
-          padding: '10px 20px',
-          backgroundColor: '#1877f2',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          width: '100%',
-          fontWeight: 'bold',
-        }}
-      >
-        {(visibleCommentsPostId !== null || postText.trim() !== '') ? 'Comment' : 'Post'}
-
-
-      </button>
-
-
-    </div>
-  </section>
-  );
-
-  // const NavigationBar = () => {
-  // const [menuOpen, setMenuOpen] = React.useState(false);
-
-  // const toggleMenu = () => setMenuOpen((prev) => !prev);
-
-  // return (
-  //   <nav
-  //     style={{
-  //       display: 'flex',
-  //       alignItems: 'center',
-  //       padding: '10px 20px',
-  //       backgroundColor: '#eee',
-  //       justifyContent: 'space-between',
-  //     }}
-  //   >
-  //     <div>Logo</div>
-  
-  //   </nav>
-  // );
-  // };
-
-
   const mainContentStyle = {
     flex: 1,
     display: 'flex',
@@ -840,17 +593,8 @@ function App() {
     paddingBottom: '180px',
     overflowY: 'auto',
   };
-
-    // MAIN APP MAIN APP MAIN APP MAIN APP
-  // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
-   // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
-    // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
-     // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
-      // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
-       // MAIN APP WITH ARTICLES IMPORTED FROM ARTICLES.JS 
-
+  // MAIN APP MAIN APP MAIN APP MAIN APP - Location for imports Below - MAIN APP MAIN APP MAIN APP
   const mainApp = (
-
 
     <div className="app-container" style={{display: 'flex', flexDirection: 'column', minHeight: '100vh', fontFamily: 'Arial, sans-serif', backgroundColor: '#254042', paddingBottom: '60px',}}ref={newsfeedRef}>
 
@@ -861,13 +605,12 @@ function App() {
      
       </main>
 
-      {postWidget}
+      <PostWidget visibleCommentsPostId={visibleCommentsPostId} postText={postText} setPostText={setPostText} toggle={toggle} setToggle={setToggle} fileInputRef={fileInputRef} postMedia={postMedia} setPostMedia={setPostMedia} currentUser={currentUser} handleDeleteAllPosts={handleDeleteAllPosts} handlePost={handlePost}/>
       <Nav currentUser={currentUser} handleLogout={handleLogout} />
 
     </div>
 
   );
-
 
   // Render login or signup form or main app
   if (!isLoggedIn) {
@@ -891,5 +634,4 @@ function App() {
 
   return mainApp;
 }
-
 export default App;
