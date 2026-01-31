@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 export default function Settings() {
   // Temporary placeholder user and settings data
@@ -10,23 +10,40 @@ export default function Settings() {
     platforms: ['The App'], // Default platform that cannot be removed
   };
 
-  // State for platforms list
+  // Keep default The App platform
   const [platforms, setPlatforms] = useState(userSettings.platforms);
-  const [newPlatform, setNewPlatform] = useState('');
 
-  // Add new platform handler
-  const handleAddPlatform = () => {
-    const trimmed = newPlatform.trim();
-    if (trimmed && !platforms.includes(trimmed)) {
-      setPlatforms([...platforms, trimmed]);
-      setNewPlatform('');
-    }
+  // Available platforms to connect (static list)
+  const availablePlatforms = useMemo(
+    () => ['Facebook', 'YouTube', 'Twitter', 'Reddit', 'Instagram'],
+    []
+  );
+
+  // Track connection state per platform (demo-only)
+  const [connections, setConnections] = useState(() =>
+    availablePlatforms.reduce((acc, p) => {
+      acc[p] = false;
+      return acc;
+    }, {})
+  );
+
+  const handleConnect = (platform) => {
+    // Demo: "connect" by marking connected and adding to platforms list
+    setConnections((prev) => ({ ...prev, [platform]: true }));
+
+    setPlatforms((prev) => {
+      if (prev.includes(platform)) return prev;
+      return [...prev, platform];
+    });
+
+    // In a real app, you'd kick off OAuth here, e.g.:
+    // startOAuth(platform)
   };
 
-  // Remove platform handler (cannot remove "The App")
-  const handleRemovePlatform = (platform) => {
-    if (platform === 'The App') return;
-    setPlatforms(platforms.filter(p => p !== platform));
+  const handleDisconnect = (platform) => {
+    // Optional: allow disconnect (NOT for "The App")
+    setConnections((prev) => ({ ...prev, [platform]: false }));
+    setPlatforms((prev) => prev.filter((p) => p !== platform));
   };
 
   return (
@@ -97,75 +114,100 @@ export default function Settings() {
         </select>
       </div>
 
-      {/* Platforms Section */}
+      {/* Platforms Section (Updated) */}
       <div style={{ marginBottom: '16px' }}>
         <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
           Platforms:
         </label>
-        <ul style={{ listStyle: 'none', paddingLeft: 0, marginBottom: '10px' }}>
+
+        {/* Always show The App as default */}
+        <ul style={{ listStyle: 'none', paddingLeft: 0, marginBottom: '14px' }}>
           {platforms.map((platform) => (
             <li
               key={platform}
               style={{
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '10px',
                 marginBottom: '6px',
                 backgroundColor: '#f0f0f0',
-                padding: '6px 10px',
+                padding: '8px 10px',
                 borderRadius: '6px',
               }}
             >
-              <span style={{ flexGrow: 1 }}>{platform}</span>
-              {platform !== 'The App' && (
+              <span style={{ fontWeight: platform === 'The App' ? 700 : 500 }}>
+                {platform}
+              </span>
+
+              {platform === 'The App' ? (
+                <span style={{ fontSize: '12px', color: '#2f4f4f' }}>Default</span>
+              ) : (
                 <button
-                  onClick={() => handleRemovePlatform(platform)}
-                  aria-label={`Remove platform ${platform}`}
+                  onClick={() => handleDisconnect(platform)}
+                  aria-label={`Disconnect ${platform}`}
                   style={{
                     backgroundColor: '#e53935',
                     border: 'none',
                     color: 'white',
                     borderRadius: '4px',
-                    padding: '4px 8px',
+                    padding: '6px 10px',
                     cursor: 'pointer',
+                    fontWeight: 'bold',
                   }}
                 >
-                  Remove
+                  Disconnect
                 </button>
               )}
             </li>
           ))}
         </ul>
 
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <input
-            type="text"
-            placeholder="Add new platform"
-            value={newPlatform}
-            onChange={(e) => setNewPlatform(e.target.value)}
-            aria-label="New platform name"
-            style={{
-              flexGrow: 1,
-              padding: '8px',
-              borderRadius: '6px',
-              border: '1px solid #ccc',
-            }}
-          />
-          <button
-            onClick={handleAddPlatform}
-            disabled={!newPlatform.trim()}
-            style={{
-              backgroundColor: '#6ee7b7',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '8px 16px',
-              cursor: newPlatform.trim() ? 'pointer' : 'not-allowed',
-              fontWeight: 'bold',
-              color: '#004d40',
-            }}
-          >
-            Add
-          </button>
+        <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>
+          Connect Another Platform
         </div>
+
+        <ul style={{ listStyle: 'none', paddingLeft: 0, margin: 0 }}>
+          {availablePlatforms.map((platform) => {
+            const isConnected = !!connections[platform];
+
+            return (
+              <li
+                key={platform}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '10px',
+                  marginBottom: '8px',
+                  backgroundColor: 'rgba(255,255,255,0.55)',
+                  padding: '10px',
+                  borderRadius: '8px',
+                }}
+              >
+                <span>{platform}</span>
+
+                <button
+                  onClick={() =>
+                    isConnected ? handleDisconnect(platform) : handleConnect(platform)
+                  }
+                  aria-label={`${isConnected ? 'Disconnect' : 'Connect'} ${platform}`}
+                  style={{
+                    backgroundColor: isConnected ? '#374151' : '#6ee7b7',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '8px 14px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    color: isConnected ? '#fff' : '#004d40',
+                  }}
+                >
+                  {isConnected ? 'Connected' : 'Connect'}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </div>
 
       <p style={{ textAlign: 'center', color: '#555', fontStyle: 'italic' }}>
