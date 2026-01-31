@@ -14,8 +14,11 @@ const PostWidget = ({
   handleDeleteAllPosts,
   handlePost,
 }) => {
+
+
   const textareaRef = useRef(null);
 
+  
   return (
     <section
       style={{

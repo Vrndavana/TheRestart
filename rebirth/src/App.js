@@ -1,35 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Articles from "./Components/Articles";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Articles  from "./Components/Articles";
+import Access from './Components/Access';
 import Profile from "./Components/Profile";
 import Nav from './Components/Nav';
 import PostWidget from './Components/PostWidget';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 
 function App() {
 
   const defaultUsers = {OperaGuy: 'Aaah!', SecurityGuy: 'TheSuperSecurePassword',};
-  // State for users (username: password)
-  const [users, setUsers] = useState(defaultUsers);
-  // Authentication & UI states
-  const [isLoggedIn,  setIsLoggedIn]  = useState(false);
-  const [isSigningUp, setIsSigningUp] = useState(false);
+  const [users, setUsers] = useState(defaultUsers); // State for users (username: password)
+  const [isLoggedIn,  setIsLoggedIn]  = useState(false); 
+  const [isSigningUp, setIsSigningUp] = useState(false);  // Authentication & UI states
   const [currentUser, setCurrentUser] = useState('');
-  // Login form states
-  const [loginUsername, setLoginUsername] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [loginError,    setLoginError]    = useState('');
-  // Signup form states
-  const [signupUsername, setSignupUsername] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
+  const [loginUsername, setLoginUsername] = useState('');  // Login form states
+  const [loginPassword, setLoginPassword] = useState('');  // Login form states
+  const [loginError,    setLoginError]    = useState('');  // Login form states
+  const [signupUsername, setSignupUsername] = useState('');   // Signup form states
+  const [signupPassword, setSignupPassword] = useState('');   // Signup form states
   const [signupError, setSignupError] = useState('');
   const [usernameTaken, setUsernameTaken] = useState(false);
-  // Toggle state for "Post to all"
-  const [toggle, setToggle] = useState(false);
-  // Post input state
-  const [postText, setPostText] = useState('');
-  // Media file state for the post being written
-  const [postMedia, setPostMedia] = useState(null);
-  // Posts state: initial posts from John and Jane with counters and comments
+  const [toggle, setToggle] = useState(false);  // Toggle state for "Post to all"
+  const [postText, setPostText] = useState('');  // Post input state
+  const [postMedia, setPostMedia] = useState(null);// Media file state for the post being written
+  const [likedPosts, setLikedPosts] = useState([]); // Track Likes by current user (store post id)
+  const [dislikedPosts, setDislikedPosts] = useState([]); // Track Dislikes
+  const [sharedPosts, setSharedPosts] = useState([]);
+  const [visibleCommentsPostId, setVisibleCommentsPostId] = useState(null); // State of Visible Comments Box
+  const commentsRef = useRef(null);
+  const textareaRef = useRef(null);  // Refs for detecting clicks outside comments and textarea
+  const newsfeedRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const handleToggle = () => {setToggle(!toggle);};  // Handlers for toggle
   const [posts, setPosts] = useState([
     {
       id: 1,
@@ -51,40 +54,18 @@ function App() {
       shares: 0,
       media: null,
     },
-  ]);
-  // Track posts liked and disliked by current user (store post ids)
-  const [likedPosts, setLikedPosts] = useState([]);
-  const [dislikedPosts, setDislikedPosts] = useState([]);
-  // Track posts shared by current user (store post ids)
-  const [sharedPosts, setSharedPosts] = useState([]);
-  // State to track which post's comments are visible
-  const [visibleCommentsPostId, setVisibleCommentsPostId] = useState(null);
-  // Refs for detecting clicks outside comments and textarea
-  const commentsRef = useRef(null);
-  const textareaRef = useRef(null);
-  const newsfeedRef = useRef(null);
-  const fileInputRef = useRef(null);
-  // Handlers
-  const handleToggle = () => {
-    setToggle(!toggle);
-  };
-
-  // Handle file input change
+  ]); 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setPostMedia(file);
     }
   };
-
-  // Trigger file input click
   const handleUploadClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
-  };
-
-  // Add or post new post or comment
+  };  // Trigger file input click
   const handlePost = () => {
     if (postText.trim() === '' && !postMedia) return;
 
@@ -126,8 +107,7 @@ function App() {
       setPostText('');
       setPostMedia(null);
     }
-  };
-
+  };  // Add or post new post or comment
   // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js  --- BELOW VVV
    useEffect(() => {
 
@@ -160,17 +140,14 @@ function App() {
     setLikedPosts((prev) => prev.filter((id) => id !== postId));
     setDislikedPosts((prev) => prev.filter((id) => id !== postId));
     setSharedPosts((prev) => prev.filter((id) => id !== postId));
-  };
-
+  }; /// Delete Post
   const handleDeleteAllPosts = () => {
     setPosts([]);
     setVisibleCommentsPostId(null);
     setLikedPosts([]);
     setDislikedPosts([]);
     setSharedPosts([]);
-  };
-
-  // Like toggle handler for posts
+  }; // Delete All Posts
   const handleLike = (postId) => {
     if (likedPosts.includes(postId)) {
       setPosts((prevPosts) =>
@@ -195,9 +172,7 @@ function App() {
         );
       }
     }
-  };
-
-  // Dislike toggle handler for posts
+  };// Like toggle handler for posts
   const handleDislike = (postId) => {
     if (dislikedPosts.includes(postId)) {
       setPosts((prevPosts) =>
@@ -222,9 +197,7 @@ function App() {
         );
       }
     }
-  };
-
-  // Share handler (normal button)
+  }; // Dislike toggle handler for posts
   const handleShare = (postId) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) =>
@@ -232,9 +205,7 @@ function App() {
       )
     );
     alert('Shared post! (Functionality placeholder)');
-  };
-
-  // Comment button toggles comment box visibility
+  };  // Share handler (normal button)
   const handleCommentClick = (postId) => {
     if (visibleCommentsPostId === postId) {
       setVisibleCommentsPostId(null);
@@ -248,9 +219,7 @@ function App() {
         if (textareaRef.current) textareaRef.current.focus();
       }, 0);
     }
-  };
-
-  // Like toggle for comments
+  }; // Comment button toggles comment box visibility
   const handleCommentLike = (postId, commentId) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) => {
@@ -291,9 +260,7 @@ function App() {
         };
       })
     );
-  };
-
-  // Dislike toggle for comments
+  };  // Like toggle for comments
   const handleCommentDislike = (postId, commentId) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) => {
@@ -334,40 +301,8 @@ function App() {
         };
       })
     );
-  };
+  };// Dislike toggle for comments
   // ALL BUTTON INTERACTS ON POST functionality - <Buttons> <- in Articles.js  - ABOVE ^^^
-
-  // Handle login submit
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (users[loginUsername] && users[loginUsername] === loginPassword) {
-      setIsLoggedIn(true);
-      setCurrentUser(loginUsername);
-      setLoginError('');
-      setLoginUsername('');
-      setLoginPassword('');
-    } else {
-      setLoginError('Invalid username or password');
-    }
-  };
-  // Handle signup submit
-  const handleSignup = (e) => {
-    e.preventDefault();
-    if (users[signupUsername]) {
-      setSignupError('Username already taken');
-      setUsernameTaken(true);
-    } else {
-      setUsers((prev) => ({ ...prev, [signupUsername]: signupPassword }));
-      setIsLoggedIn(true);
-      setCurrentUser(signupUsername);
-      setSignupError('');
-      setUsernameTaken(false);
-      setSignupUsername('');
-      setSignupPassword('');
-      setIsSigningUp(false);
-    }
-  };
-  // Handle logout
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser('');
@@ -382,207 +317,7 @@ function App() {
     setLikedPosts([]);
     setDislikedPosts([]);
     setSharedPosts([]);
-  };
-  // Login form JSX
-  const loginForm = (
-    <form
-      onSubmit={handleLogin}
-      style={{
-        backgroundColor: '#aa88c0',
-        padding: '30px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-        width: '100%',
-        maxWidth: '400px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '15px',
-      }}
-    >
-      <h2 style={{ textAlign: 'center' }}>Login</h2>
-
-      <input
-        type="text"
-        placeholder="Username"
-        value={loginUsername}
-        onChange={(e) => setLoginUsername(e.target.value)}
-        required
-        style={{
-          padding: '10px',
-          fontSize: '16px',
-          borderRadius: '5px',
-          border: '1px solid #ccc',
-          boxSizing: 'border-box',
-        }}
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        value={loginPassword}
-        onChange={(e) => setLoginPassword(e.target.value)}
-        required
-        style={{
-          padding: '10px',
-          fontSize: '16px',
-          borderRadius: '5px',
-          border: '1px solid #ccc',
-          boxSizing: 'border-box',
-        }}
-      />
-
-      {loginError && (
-        <div style={{ color: 'red', fontWeight: 'bold', textAlign: 'center' }}>
-          {loginError}
-        </div>
-      )}
-
-      <button
-        type="submit"
-        style={{
-          padding: '10px',
-          backgroundColor: '#1877f2',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-          fontSize: '16px',
-        }}
-      >
-        Log In
-      </button>
-
-      <button
-        type="button"
-        onClick={() => {
-          setIsSigningUp(true);
-          setLoginError('');
-          setLoginUsername('');
-          setLoginPassword('');
-        }}
-        style={{
-          marginTop: '10px',
-          padding: '10px',
-          backgroundColor: '#4caf50',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-          fontSize: '16px',
-        }}
-      >
-        Sign Up
-      </button>
-    </form>
-  );
-  // Signup form JSX
-  const signupForm = (
-    <form
-      onSubmit={handleSignup}
-      style={{
-        backgroundColor: '#fff',
-        padding: '30px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-        width: '100%',
-        maxWidth: '400px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '15px',
-      }}
-    >
-      <h2 style={{ textAlign: 'center' }}>Sign Up</h2>
-
-      <input
-        type="text"
-        placeholder="Username"
-        value={signupUsername}
-        onChange={(e) => {
-          setSignupUsername(e.target.value);
-          if (users[e.target.value]) {
-            setUsernameTaken(true);
-            setSignupError('Username already taken');
-          } else {
-            setUsernameTaken(false);
-            setSignupError('');
-          }
-        }}
-        required
-        style={{
-          padding: '10px',
-          fontSize: '16px',
-          borderRadius: '5px',
-          border: usernameTaken ? '2px solid red' : '1px solid #ccc',
-          boxSizing: 'border-box',
-        }}
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        value={signupPassword}
-        onChange={(e) => setSignupPassword(e.target.value)}
-        required
-        style={{
-          padding: '10px',
-          fontSize: '16px',
-          borderRadius: '5px',
-          border: '1px solid #ccc',
-          boxSizing: 'border-box',
-        }}
-      />
-
-      {signupError && (
-        <div style={{ color: 'red', fontWeight: 'bold', textAlign: 'center' }}>
-          {signupError}
-        </div>
-      )}
-
-      <button
-        type="submit"
-        disabled={usernameTaken}
-        style={{
-          padding: '10px',
-          backgroundColor: usernameTaken ? '#999' : '#4caf50',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: usernameTaken ? 'not-allowed' : 'pointer',
-          fontWeight: 'bold',
-          fontSize: '16px',
-        }}
-      >
-        Create Account
-      </button>
-
-      <button
-        type="button"
-        onClick={() => {
-          setIsSigningUp(false);
-          setSignupError('');
-          setSignupUsername('');
-          setSignupPassword('');
-          setUsernameTaken(false);
-        }}
-        style={{
-          marginTop: '10px',
-          padding: '10px',
-          backgroundColor: '#1877f2',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-          fontSize: '16px',
-        }}
-      >
-        Back to Login
-      </button>
-    </form>
-  );
-
+  };// NAV.js!!! - Handle logout NAV BAR NOOTTT ACCESS.JS 
   const mainContentStyle = {
     flex: 1,
     display: 'flex',
@@ -593,6 +328,7 @@ function App() {
     paddingBottom: '180px',
     overflowY: 'auto',
   };
+
   // MAIN APP MAIN APP MAIN APP MAIN APP - Location for imports Below - MAIN APP MAIN APP MAIN APP
   const mainApp = (
 
@@ -600,8 +336,8 @@ function App() {
 
       <main style={mainContentStyle}>
 
-          <Articles posts={posts} commentsRef={commentsRef} currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
-          <Profile posts={posts}currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
+        <Articles posts={posts} commentsRef={commentsRef} currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
+        <Profile posts={posts}currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
      
       </main>
 
@@ -611,27 +347,17 @@ function App() {
     </div>
 
   );
-
   // Render login or signup form or main app
   if (!isLoggedIn) {
     return (
-      <div
-        style={{
-          height: '100vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontFamily: 'Arial, sans-serif',
-          backgroundColor: '#1f2227',
-          padding: '20px',
-        }}
-      >
-        {isSigningUp ? signupForm : loginForm}
-
+      
+      <div style={{height: '100vh',display: 'flex',justifyContent: 'center',alignItems: 'center',fontFamily: 'Arial, sans-serif',backgroundColor: '#1f2227',padding: '20px',}}>
+  
+        {<Access users={users} setUsers={setUsers} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} currentUser={currentUser} setCurrentUser={setCurrentUser} likedPosts={likedPosts} setLikedPosts={setLikedPosts} dislikedPosts={dislikedPosts} setDislikedPosts={setDislikedPosts} sharedPosts={sharedPosts} setSharedPosts={setSharedPosts}/>}
+        
       </div>
     );
   }
-
   return mainApp;
 }
 export default App;

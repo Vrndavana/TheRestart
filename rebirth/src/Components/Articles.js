@@ -90,7 +90,7 @@ export default function Articles({
             }}
           >
         
-             {/* LIKE BUTTON  */}
+         
             <button
               onClick={() => handleLike(post.id)}
               style={{
@@ -99,7 +99,7 @@ export default function Articles({
                 border: "none",
                 borderRadius: "4px",
                 padding: "3% 10%",
-                      margin: "0px 15px",
+                      margin: "0px 1%",
                 cursor: "pointer",
                 fontSize: "12px",
               }}
@@ -107,8 +107,7 @@ export default function Articles({
               aria-label="Like post"
             >
               Like
-            </button>
-                  {/* DISLIKE BUTTON */}
+            </button>  
             <button
               onClick={() => handleDislike(post.id)}
               style={{
@@ -117,7 +116,7 @@ export default function Articles({
                 border: "none",
                 borderRadius: "4px",
                 padding: "3% 10%",
-                     margin: "0px 15px",
+                     margin: "0px 1%",
                 cursor: "pointer",
                 fontSize: "12px",
               }}
@@ -125,12 +124,7 @@ export default function Articles({
               aria-label="Dislike post"
             >
               Dislike
-            </button>
-
-
-
-                {/* COMMENT */}
-
+            </button> 
             <button
               onClick={() => handleCommentClick(post.id)}
               style={{
@@ -139,7 +133,7 @@ export default function Articles({
                 border: "none",
                 borderRadius: "4px",
                  padding: "3% 10%",
-                 margin: "0px 15px",
+                 margin: "0px 1%",
                 cursor: "pointer",
                 fontSize: "12px",
               }}
@@ -147,7 +141,7 @@ export default function Articles({
               aria-label="Comment on post"
             >
               Comment
-            </button>
+            </button> 
 
                 <button
                     onClick={() => handleShare(post.id)}
@@ -159,14 +153,14 @@ export default function Articles({
                     border: "none",
                     borderRadius: "4px",
                        padding: "3% 13%",
-                     margin: "0px 8px",
+                     margin: "0px 1%",
                     cursor: "pointer",
                     fontSize: "12px",
                }}
               aria-label="Share post"
             >
               Share
-             </button>
+             </button> 
 
              {/* DELETE BUTTON FOR ADMIN AND USERS  */}
     {(currentUser === "SecurityGuy" || post.username === currentUser) && (
@@ -210,10 +204,10 @@ export default function Articles({
   }}>
 
   {/* THESE ARE THE COUNTERS FOR THE LIKES ON THE POTS  */}
-  <span style={{margin: "1% 5%",}}>👍 {post.likes}</span>
-  <span style={{margin: "1% 5%",}}>👎 {post.dislikes}</span>
-  <span style={{margin: "1% 5%",}}>💬 {post.comments.length}</span>
-  <span style={{margin: "1% 5%",}}>🔄 {post.shares}</span>
+  <span style={{margin: "1% 2%",}}>👍 {post.likes}</span>
+  <span style={{margin: "1% 2%",}}>👎 {post.dislikes}</span>
+  <span style={{margin: "1% 2%",}}>💬 {post.comments.length}</span>
+  <span style={{margin: "1% 2%",}}>🔄 {post.shares}</span>
 
 </div>
 

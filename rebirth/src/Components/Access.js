@@ -23,13 +23,11 @@ const Access = ({
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
-
   // Signup form states
   const [signupUsername, setSignupUsername] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupError, setSignupError] = useState('');
   const [usernameTaken, setUsernameTaken] = useState(false);
-
   // Toggle between login and signup forms
   const [isSigningUp, setIsSigningUp] = useState(false);
 
@@ -46,7 +44,6 @@ const Access = ({
       setLoginError('Invalid username or password');
     }
   };
-
   // Handle signup submit
   const handleSignup = (e) => {
     e.preventDefault();
@@ -64,7 +61,6 @@ const Access = ({
       setIsSigningUp(false);
     }
   };
-
   // Handle logout
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -81,7 +77,6 @@ const Access = ({
     setDislikedPosts([]);
     setSharedPosts([]);
   };
-
   // Login form JSX
   const loginForm = (
     <form
