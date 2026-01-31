@@ -16,9 +16,9 @@ function App() {
   const [isLoggedIn,  setIsLoggedIn]  = useState(false); 
   const [isSigningUp, setIsSigningUp] = useState(false);  // Authentication & UI states
   const [currentUser, setCurrentUser] = useState('');
-  const [loginUsername, setLoginUsername] = useState('');  // Login form states
-  const [loginPassword, setLoginPassword] = useState('');  // Login form states
-  const [loginError,    setLoginError]    = useState('');  // Login form states
+  const [loginUsername, setLoginUsername] = useState('');     // Login form states
+  const [loginPassword, setLoginPassword] = useState('');     // Login form states
+  const [loginError,    setLoginError]    = useState('');     // Login form states
   const [signupUsername, setSignupUsername] = useState('');   // Signup form states
   const [signupPassword, setSignupPassword] = useState('');   // Signup form states
   const [signupError, setSignupError] = useState('');
@@ -57,12 +57,7 @@ function App() {
       media: null,
     },
   ]); 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setPostMedia(file);
-    }
-  };
+
   const handleUploadClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();

@@ -1,12 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function Settings() {
   // Temporary placeholder user and settings data
   const currentUser = 'Your Account';
   const userSettings = {
     emailNotifications: true,
-    privacyLevel: 'friends',
+    privacyLevel: 'FED Agents Only',
     theme: 'dark',
+    platforms: ['The App'], // Default platform that cannot be removed
+  };
+
+  // State for platforms list
+  const [platforms, setPlatforms] = useState(userSettings.platforms);
+  const [newPlatform, setNewPlatform] = useState('');
+
+  // Add new platform handler
+  const handleAddPlatform = () => {
+    const trimmed = newPlatform.trim();
+    if (trimmed && !platforms.includes(trimmed)) {
+      setPlatforms([...platforms, trimmed]);
+      setNewPlatform('');
+    }
+  };
+
+  // Remove platform handler (cannot remove "The App")
+  const handleRemovePlatform = (platform) => {
+    if (platform === 'The App') return;
+    setPlatforms(platforms.filter(p => p !== platform));
   };
 
   return (
@@ -77,8 +97,79 @@ export default function Settings() {
         </select>
       </div>
 
+      {/* Platforms Section */}
+      <div style={{ marginBottom: '16px' }}>
+        <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
+          Platforms:
+        </label>
+        <ul style={{ listStyle: 'none', paddingLeft: 0, marginBottom: '10px' }}>
+          {platforms.map((platform) => (
+            <li
+              key={platform}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: '6px',
+                backgroundColor: '#f0f0f0',
+                padding: '6px 10px',
+                borderRadius: '6px',
+              }}
+            >
+              <span style={{ flexGrow: 1 }}>{platform}</span>
+              {platform !== 'The App' && (
+                <button
+                  onClick={() => handleRemovePlatform(platform)}
+                  aria-label={`Remove platform ${platform}`}
+                  style={{
+                    backgroundColor: '#e53935',
+                    border: 'none',
+                    color: 'white',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Remove
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <input
+            type="text"
+            placeholder="Add new platform"
+            value={newPlatform}
+            onChange={(e) => setNewPlatform(e.target.value)}
+            aria-label="New platform name"
+            style={{
+              flexGrow: 1,
+              padding: '8px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+            }}
+          />
+          <button
+            onClick={handleAddPlatform}
+            disabled={!newPlatform.trim()}
+            style={{
+              backgroundColor: '#6ee7b7',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '8px 16px',
+              cursor: newPlatform.trim() ? 'pointer' : 'not-allowed',
+              fontWeight: 'bold',
+              color: '#004d40',
+            }}
+          >
+            Add
+          </button>
+        </div>
+      </div>
+
       <p style={{ textAlign: 'center', color: '#555', fontStyle: 'italic' }}>
-        (This is a simple template. Settings are currently read-only.)
+        (This is a simple template. Other settings are currently read-only.)
       </p>
     </section>
   );
