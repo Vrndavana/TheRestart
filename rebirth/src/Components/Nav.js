@@ -37,31 +37,49 @@ const Nav = ({ currentUser, handleLogout }) => {
         }}
       >
         {/* Navigation links using Link for browser routing */}
-        <li>
-          <Link to="/" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
-            Articles
+
+  
+      <li>
+          <Link to="/friends" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
+            Friends
           </Link>
         </li>
+
+
         <li>
           <Link to="/profile" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
             Profile
           </Link>
         </li>
-        <li>
-          <Link to="/friends" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
-            Friends
+
+
+
+  
+      <li>
+          <Link to="/" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
+            HOME
           </Link>
         </li>
+
         <li>
           <Link to="/messages" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
             Messages
           </Link>
         </li>
+
+
+
+
+
         <li>
           <Link to="/settings" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
             Settings
           </Link>
         </li>
+
+
+
+
 
         {/* Log out button */}
         <li>

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Articles  from "./Components/Articles";
-import Access from './Components/Access';
+import Messages  from "./Components/Messages";
+import Friends  from "./Components/Friends";
+import Settings  from "./Components/Settings";
 import Profile from "./Components/Profile";
 import Nav from './Components/Nav';
 import PostWidget from './Components/PostWidget';
-
+import Access from './Components/Access';
 
 function App() {
 
@@ -329,6 +331,8 @@ function App() {
     overflowY: 'auto',
   };
 
+
+
   // MAIN APP MAIN APP MAIN APP MAIN APP - Location for imports Below - MAIN APP MAIN APP MAIN APP
 const mainApp = (
   <div
@@ -345,84 +349,16 @@ const mainApp = (
   >
     <main style={mainContentStyle}>
       <Routes>
-        <Route
-          path="/articles"
-          element={
-            <Articles
-              posts={posts}
-              commentsRef={commentsRef}
-              currentUser={currentUser}
-              handleDeletePost={handleDeletePost}
-              handleLike={handleLike}
-              handleDislike={handleDislike}
-              handleCommentClick={handleCommentClick}
-              handleShare={handleShare}
-              likedPosts={likedPosts}
-              dislikedPosts={dislikedPosts}
-              visibleCommentsPostId={visibleCommentsPostId}
-              handleCommentLike={handleCommentLike}
-              handleCommentDislike={handleCommentDislike}
-            />
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <Profile
-              posts={posts}
-              currentUser={currentUser}
-              handleDeletePost={handleDeletePost}
-              handleLike={handleLike}
-              handleDislike={handleDislike}
-              handleCommentClick={handleCommentClick}
-              handleShare={handleShare}
-              likedPosts={likedPosts}
-              dislikedPosts={dislikedPosts}
-              visibleCommentsPostId={visibleCommentsPostId}
-              handleCommentLike={handleCommentLike}
-              handleCommentDislike={handleCommentDislike}
-            />
-          }
-        />
-        {/* You can add more routes here as needed */}
-        {/* Optionally, add a default route */}
-        <Route
-          path="/"
-          element={
-            <Articles
-              posts={posts}
-              commentsRef={commentsRef}
-              currentUser={currentUser}
-              handleDeletePost={handleDeletePost}
-              handleLike={handleLike}
-              handleDislike={handleDislike}
-              handleCommentClick={handleCommentClick}
-              handleShare={handleShare}
-              likedPosts={likedPosts}
-              dislikedPosts={dislikedPosts}
-              visibleCommentsPostId={visibleCommentsPostId}
-              handleCommentLike={handleCommentLike}
-              handleCommentDislike={handleCommentDislike}
-            />
-          }
-        />
+        <Route path="/profile" element={<Profile posts={posts}currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>}/>
+        <Route path="/settings" element={<Settings />}/>
+        <Route path="/messages" element={<Messages />}/>
+        <Route path="/friends" element={<Friends />} />
+        <Route path="/" element={<Articles posts={posts}commentsRef={commentsRef}currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>}/>
       </Routes>
     </main>
 
-    <PostWidget
-      visibleCommentsPostId={visibleCommentsPostId}
-      postText={postText}
-      setPostText={setPostText}
-      toggle={toggle}
-      setToggle={setToggle}
-      fileInputRef={fileInputRef}
-      postMedia={postMedia}
-      setPostMedia={setPostMedia}
-      currentUser={currentUser}
-      handleDeleteAllPosts={handleDeleteAllPosts}
-      handlePost={handlePost}
-    />
-    <Nav currentUser={currentUser} handleLogout={handleLogout} />
+    <PostWidget visibleCommentsPostId={visibleCommentsPostId}postText={postText}setPostText={setPostText}toggle={toggle}setToggle={setToggle}fileInputRef={fileInputRef}postMedia={postMedia}setPostMedia={setPostMedia}currentUser={currentUser}handleDeleteAllPosts={handleDeleteAllPosts}handlePost={handlePost}/>
+    <Nav currentUser={currentUser} handleLogout={handleLogout}/>
   </div>
 );
 
