@@ -622,6 +622,7 @@ function App() {
 
 
   const postWidget = (
+
   <section
     style={{
       position: 'fixed',
@@ -635,36 +636,18 @@ function App() {
       display: 'flex',
       justifyContent: 'center',
       zIndex: 1000,
-    }}
-  >
-    <div
-      style={{
-        width: '100%',
-        maxWidth: '600px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '6px',
-      }}
-    >
-      <textarea
-        ref={textareaRef}
+    }}>
+
+
+    <div style={{width: '100%',maxWidth: '600px',display: 'flex',flexDirection: 'column',gap: '6px',}}>
+      
+      <textarea ref={textareaRef}
         placeholder={
           visibleCommentsPostId !== null
             ? 'Write a comment...'
             : 'Post To The World!'
         }
-        value={postText}
-        onChange={(e) => setPostText(e.target.value)}
-        style={{
-          width: '100%',
-          height: '60px',
-          padding: '10px',
-          fontSize: '16px',
-          borderRadius: '5px',
-          border: '1px solid #ccc',
-          resize: 'none',
-          boxSizing: 'border-box',
-        }}
+        value={postText} onChange={(e) => setPostText(e.target.value)} style={{ width: '100%', height: '60px', padding: '10px', fontSize: '16px', borderRadius: '5px', border: '1px solid #ccc', resize: 'none', boxSizing: 'border-box',}}
       />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -707,8 +690,8 @@ function App() {
 
         <span style={{ fontSize: '16px', userSelect: 'none' }}>Post to all</span>
 
-        {/* Upload Button */}
 
+        {/* Upload Button */}
         <button
           onClick={() => fileInputRef.current && fileInputRef.current.click()}
           style={{
@@ -743,6 +726,10 @@ function App() {
           accept="*/*"
         />
 
+
+
+
+        {/* Delete All Posts Button for SecurityGuy */}
         {currentUser === 'SecurityGuy' && (
           <button
             onClick={handleDeleteAllPosts}
@@ -762,7 +749,10 @@ function App() {
             Delete All Posts
           </button>
         )}
+
       </div>
+
+
 
         {/* VIDEO PICTURE AUDIO MP3 MP4 MEDIA IN POST  DD MEDIA CONFIRM */}
       {/* Show selected media file name if any */}
@@ -782,6 +772,8 @@ function App() {
         </div>
       )}
 
+
+        {/* Button handle Post for Post or Comment */}
       <button
         onClick={() => {
           if (postText.trim() === '') {
@@ -807,31 +799,35 @@ function App() {
         }}
       >
         {(visibleCommentsPostId !== null || postText.trim() !== '') ? 'Comment' : 'Post'}
+
+
       </button>
+
+
     </div>
   </section>
   );
 
-  const NavigationBar = () => {
-  const [menuOpen, setMenuOpen] = React.useState(false);
+  // const NavigationBar = () => {
+  // const [menuOpen, setMenuOpen] = React.useState(false);
 
-  const toggleMenu = () => setMenuOpen((prev) => !prev);
+  // const toggleMenu = () => setMenuOpen((prev) => !prev);
 
-  return (
-    <nav
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        padding: '10px 20px',
-        backgroundColor: '#eee',
-        justifyContent: 'space-between',
-      }}
-    >
-      <div>Logo</div>
+  // return (
+  //   <nav
+  //     style={{
+  //       display: 'flex',
+  //       alignItems: 'center',
+  //       padding: '10px 20px',
+  //       backgroundColor: '#eee',
+  //       justifyContent: 'space-between',
+  //     }}
+  //   >
+  //     <div>Logo</div>
   
-    </nav>
-  );
-  };
+  //   </nav>
+  // );
+  // };
 
 
   const mainContentStyle = {
@@ -859,8 +855,10 @@ function App() {
     <div className="app-container" style={{display: 'flex', flexDirection: 'column', minHeight: '100vh', fontFamily: 'Arial, sans-serif', backgroundColor: '#254042', paddingBottom: '60px',}}ref={newsfeedRef}>
 
       <main style={mainContentStyle}>
+
           <Articles posts={posts} commentsRef={commentsRef} currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
           <Profile posts={posts}currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
+     
       </main>
 
       {postWidget}
