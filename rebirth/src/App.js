@@ -330,34 +330,136 @@ function App() {
   };
 
   // MAIN APP MAIN APP MAIN APP MAIN APP - Location for imports Below - MAIN APP MAIN APP MAIN APP
-  const mainApp = (
+const mainApp = (
+  <div
+    className="app-container"
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      fontFamily: 'Arial, sans-serif',
+      backgroundColor: '#254042',
+      paddingBottom: '60px',
+    }}
+    ref={newsfeedRef}
+  >
+    <main style={mainContentStyle}>
+      <Routes>
+        <Route
+          path="/articles"
+          element={
+            <Articles
+              posts={posts}
+              commentsRef={commentsRef}
+              currentUser={currentUser}
+              handleDeletePost={handleDeletePost}
+              handleLike={handleLike}
+              handleDislike={handleDislike}
+              handleCommentClick={handleCommentClick}
+              handleShare={handleShare}
+              likedPosts={likedPosts}
+              dislikedPosts={dislikedPosts}
+              visibleCommentsPostId={visibleCommentsPostId}
+              handleCommentLike={handleCommentLike}
+              handleCommentDislike={handleCommentDislike}
+            />
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <Profile
+              posts={posts}
+              currentUser={currentUser}
+              handleDeletePost={handleDeletePost}
+              handleLike={handleLike}
+              handleDislike={handleDislike}
+              handleCommentClick={handleCommentClick}
+              handleShare={handleShare}
+              likedPosts={likedPosts}
+              dislikedPosts={dislikedPosts}
+              visibleCommentsPostId={visibleCommentsPostId}
+              handleCommentLike={handleCommentLike}
+              handleCommentDislike={handleCommentDislike}
+            />
+          }
+        />
+        {/* You can add more routes here as needed */}
+        {/* Optionally, add a default route */}
+        <Route
+          path="/"
+          element={
+            <Articles
+              posts={posts}
+              commentsRef={commentsRef}
+              currentUser={currentUser}
+              handleDeletePost={handleDeletePost}
+              handleLike={handleLike}
+              handleDislike={handleDislike}
+              handleCommentClick={handleCommentClick}
+              handleShare={handleShare}
+              likedPosts={likedPosts}
+              dislikedPosts={dislikedPosts}
+              visibleCommentsPostId={visibleCommentsPostId}
+              handleCommentLike={handleCommentLike}
+              handleCommentDislike={handleCommentDislike}
+            />
+          }
+        />
+      </Routes>
+    </main>
 
-    <div className="app-container" style={{display: 'flex', flexDirection: 'column', minHeight: '100vh', fontFamily: 'Arial, sans-serif', backgroundColor: '#254042', paddingBottom: '60px',}}ref={newsfeedRef}>
+    <PostWidget
+      visibleCommentsPostId={visibleCommentsPostId}
+      postText={postText}
+      setPostText={setPostText}
+      toggle={toggle}
+      setToggle={setToggle}
+      fileInputRef={fileInputRef}
+      postMedia={postMedia}
+      setPostMedia={setPostMedia}
+      currentUser={currentUser}
+      handleDeleteAllPosts={handleDeleteAllPosts}
+      handlePost={handlePost}
+    />
+    <Nav currentUser={currentUser} handleLogout={handleLogout} />
+  </div>
+);
 
-      <main style={mainContentStyle}>
-
-        <Articles posts={posts} commentsRef={commentsRef} currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
-        <Profile posts={posts}currentUser={currentUser}handleDeletePost={handleDeletePost}handleLike={handleLike}handleDislike={handleDislike}handleCommentClick={handleCommentClick}handleShare={handleShare}likedPosts={likedPosts}dislikedPosts={dislikedPosts}visibleCommentsPostId={visibleCommentsPostId}handleCommentLike={handleCommentLike}handleCommentDislike={handleCommentDislike}/>
-     
-      </main>
-
-      <PostWidget visibleCommentsPostId={visibleCommentsPostId} postText={postText} setPostText={setPostText} toggle={toggle} setToggle={setToggle} fileInputRef={fileInputRef} postMedia={postMedia} setPostMedia={setPostMedia} currentUser={currentUser} handleDeleteAllPosts={handleDeleteAllPosts} handlePost={handlePost}/>
-      <Nav currentUser={currentUser} handleLogout={handleLogout} />
-
+// Render login or signup form or main app
+if (!isLoggedIn) {
+  return (
+    <div
+      style={{
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontFamily: 'Arial, sans-serif',
+        backgroundColor: '#1f2227',
+        padding: '20px',
+      }}
+    >
+      {
+        <Access
+          users={users}
+          setUsers={setUsers}
+          isLoggedIn={isLoggedIn}
+          setIsLoggedIn={setIsLoggedIn}
+          currentUser={currentUser}
+          setCurrentUser={setCurrentUser}
+          likedPosts={likedPosts}
+          setLikedPosts={setLikedPosts}
+          dislikedPosts={dislikedPosts}
+          setDislikedPosts={setDislikedPosts}
+          sharedPosts={sharedPosts}
+          setSharedPosts={setSharedPosts}
+        />
+      }
     </div>
-
   );
-  // Render login or signup form or main app
-  if (!isLoggedIn) {
-    return (
-      
-      <div style={{height: '100vh',display: 'flex',justifyContent: 'center',alignItems: 'center',fontFamily: 'Arial, sans-serif',backgroundColor: '#1f2227',padding: '20px',}}>
-  
-        {<Access users={users} setUsers={setUsers} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} currentUser={currentUser} setCurrentUser={setCurrentUser} likedPosts={likedPosts} setLikedPosts={setLikedPosts} dislikedPosts={dislikedPosts} setDislikedPosts={setDislikedPosts} sharedPosts={sharedPosts} setSharedPosts={setSharedPosts}/>}
-        
-      </div>
-    );
-  }
-  return mainApp;
+}
+
+return mainApp;
 }
 export default App;

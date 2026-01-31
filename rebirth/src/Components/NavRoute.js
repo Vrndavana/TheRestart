@@ -1,95 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-
-
-// Main APP BRrowser Link 
-// import { Routes, Route } from 'react-router-dom';
-
-// const mainApp = (
-//   <div
-//     className="app-container"
-//     style={{
-//       display: 'flex',
-//       flexDirection: 'column',
-//       minHeight: '100vh',
-//       fontFamily: 'Arial, sans-serif',
-//       backgroundColor: '#254042',
-//       paddingBottom: '60px',
-//     }}
-//     ref={newsfeedRef}
-//   >
-//     <main style={mainContentStyle}>
-//       <Routes>
-//         <Route
-//           path="/"
-//           element={
-//             <Articles
-//               posts={posts}
-//               commentsRef={commentsRef}
-//               currentUser={currentUser}
-//               handleDeletePost={handleDeletePost}
-//               handleLike={handleLike}
-//               handleDislike={handleDislike}
-//               handleCommentClick={handleCommentClick}
-//               handleShare={handleShare}
-//               likedPosts={likedPosts}
-//               dislikedPosts={dislikedPosts}
-//               visibleCommentsPostId={visibleCommentsPostId}
-//               handleCommentLike={handleCommentLike}
-//               handleCommentDislike={handleCommentDislike}
-//             />
-//           }
-//         />
-//         <Route
-//           path="/profile"
-//           element={
-//             <Profile
-//               posts={posts}
-//               currentUser={currentUser}
-//               handleDeletePost={handleDeletePost}
-//               handleLike={handleLike}
-//               handleDislike={handleDislike}
-//               handleCommentClick={handleCommentClick}
-//               handleShare={handleShare}
-//               likedPosts={likedPosts}
-//               dislikedPosts={dislikedPosts}
-//               visibleCommentsPostId={visibleCommentsPostId}
-//               handleCommentLike={handleCommentLike}
-//               handleCommentDislike={handleCommentDislike}
-//             />
-//           }
-//         />
-//       </Routes>
-//     </main>
-
-//     {postWidget}
-//     <Nav currentUser={currentUser} handleLogout={handleLogout} />
-//   </div>
-// );
-
-
-
-// Find main app route and add the browser wrappign with the app inside
-// import React from 'react';
-// import { BrowserRouter } from 'react-router-dom';
-// import MainApp from './MainApp'; // or wherever your mainApp component is
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <MainApp />
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;
-
-
-
-
-
-
 const Nav = ({ currentUser, handleLogout }) => {
   return (
     <nav
@@ -110,6 +21,7 @@ const Nav = ({ currentUser, handleLogout }) => {
         fontFamily: 'Arial, sans-serif',
       }}
     >
+      {/* User display */}
       <div style={{ fontWeight: 'bold', color: '#fafdfd', margin: 'auto' }}>
         {currentUser}
       </div>
@@ -124,26 +36,29 @@ const Nav = ({ currentUser, handleLogout }) => {
           alignItems: 'center',
         }}
       >
-        <li style={{ cursor: 'pointer' }}>
-          <Link
-            to="/"
-            style={{ textDecoration: 'none', color: '#fafdfd', fontWeight: 'bold' }}
-          >
-            Articles
-          </Link>
-        </li>
-        <li style={{ cursor: 'pointer' }}>
-          <Link
-            to="/profile"
-            style={{ textDecoration: 'none', color: '#fafdfd', fontWeight: 'bold' }}
-          >
+        {/* Navigation links using Link for browser routing */}
+        <li>
+          <Link to="/profile" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
             Profile
           </Link>
         </li>
-        <li style={{ cursor: 'pointer' }}>Friends</li>
-        <li style={{ cursor: 'pointer' }}>Messages</li>
-        <li style={{ cursor: 'pointer' }}>Settings</li>
+        <li>
+          <Link to="/friends" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
+            Friends
+          </Link>
+        </li>
+        <li>
+          <Link to="/messages" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
+            Messages
+          </Link>
+        </li>
+        <li>
+          <Link to="/settings" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
+            Settings
+          </Link>
+        </li>
 
+        {/* Log out button */}
         <li>
           <button
             onClick={handleLogout}
