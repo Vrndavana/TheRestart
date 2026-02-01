@@ -13,15 +13,17 @@ export default function Settings() {
   // Keep default The App platform
   const [platforms, setPlatforms] = useState(userSettings.platforms);
 
-  // Available platforms to connect (static list)
-  const availablePlatforms = useMemo(
+  // All available platforms (static list)
+  const allAvailablePlatforms = useMemo(
     () => ['Facebook', 'YouTube', 'Twitter', 'Reddit', 'Instagram'],
     []
   );
 
   // Track connection state per platform (demo-only)
+  // We no longer need separate connections state; platforms array tracks connected platforms including "The App"
+  // But to keep logic clear, we keep connections state for quick lookup
   const [connections, setConnections] = useState(() =>
-    availablePlatforms.reduce((acc, p) => {
+    allAvailablePlatforms.reduce((acc, p) => {
       acc[p] = false;
       return acc;
     }, {})
@@ -31,7 +33,6 @@ export default function Settings() {
   const [addingGroupFor, setAddingGroupFor] = useState(null);
 
   // Groups per platform (demo static data)
-  // In real app, you'd fetch this from platform API after connection
   const platformGroups = useMemo(() => ({
     Facebook: ['Personal Page', 'Family', 'Work', 'Friends'],
     YouTube: ['Personal Page', 'Gaming Channel', 'Vlogs', 'Tech Reviews'],
@@ -42,19 +43,22 @@ export default function Settings() {
 
   // Track enabled groups per platform (default to "Personal Page" if connected)
   const [enabledGroups, setEnabledGroups] = useState(() =>
-    availablePlatforms.reduce((acc, p) => {
+    allAvailablePlatforms.reduce((acc, p) => {
       acc[p] = ['Personal Page'];
       return acc;
     }, {})
   );
 
+  // Connect platform handler
   const handleConnect = (platform) => {
-    setConnections((prev) => ({ ...prev, [platform]: true }));
-
+    // Add platform to connected list
     setPlatforms((prev) => {
       if (prev.includes(platform)) return prev;
       return [...prev, platform];
     });
+
+    // Mark connected true
+    setConnections((prev) => ({ ...prev, [platform]: true }));
 
     // Ensure default group is set on connect
     setEnabledGroups((prev) => {
@@ -63,17 +67,26 @@ export default function Settings() {
     });
   };
 
+  // Disconnect platform handler
   const handleDisconnect = (platform) => {
-    setConnections((prev) => ({ ...prev, [platform]: false }));
+    // Remove platform from connected list
     setPlatforms((prev) => prev.filter((p) => p !== platform));
+
+    // Mark connected false
+    setConnections((prev) => ({ ...prev, [platform]: false }));
+
+    // Remove enabled groups for platform
     setEnabledGroups((prev) => {
       const copy = { ...prev };
       delete copy[platform];
       return copy;
     });
+
+    // Close group selector if open for this platform
     if (addingGroupFor === platform) setAddingGroupFor(null);
   };
 
+  // Toggle group selection for a platform
   const toggleGroupSelection = (platform, group) => {
     setEnabledGroups((prev) => {
       const currentGroups = prev[platform] || [];
@@ -92,6 +105,11 @@ export default function Settings() {
       }
     });
   };
+
+  // Compute platforms available to connect (exclude connected platforms except "The App")
+  const connectablePlatforms = allAvailablePlatforms.filter(
+    (p) => !platforms.includes(p)
+  );
 
   return (
     <section
@@ -317,45 +335,44 @@ export default function Settings() {
         </div>
 
         <ul style={{ listStyle: 'none', paddingLeft: 0, margin: 0 }}>
-          {availablePlatforms.map((platform) => {
-            const isConnected = !!connections[platform];
+          {connectablePlatforms.length === 0 && (
+            <li style={{ fontStyle: 'italic', color: '#444', padding: '8px' }}>
+              All available platforms connected.
+            </li>
+          )}
+          {connectablePlatforms.map((platform) => (
+            <li
+              key={platform}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '10px',
+                marginBottom: '8px',
+                backgroundColor: 'rgba(255,255,255,0.55)',
+                padding: '10px',
+                borderRadius: '8px',
+              }}
+            >
+              <span>{platform}</span>
 
-            return (
-              <li
-                key={platform}
+              <button
+                onClick={() => handleConnect(platform)}
+                aria-label={`Connect ${platform}`}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '10px',
-                  marginBottom: '8px',
-                  backgroundColor: 'rgba(255,255,255,0.55)',
-                  padding: '10px',
-                  borderRadius: '8px',
+                  backgroundColor: '#6ee7b7',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '8px 14px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  color: '#004d40',
                 }}
               >
-                <span>{platform}</span>
-
-                <button
-                  onClick={() =>
-                    isConnected ? handleDisconnect(platform) : handleConnect(platform)
-                  }
-                  aria-label={`${isConnected ? 'Disconnect' : 'Connect'} ${platform}`}
-                  style={{
-                    backgroundColor: isConnected ? '#374151' : '#6ee7b7',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '8px 14px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
-                    color: isConnected ? '#fff' : '#004d40',
-                  }}
-                >
-                  {isConnected ? 'Connected' : 'Connect'}
-                </button>
-              </li>
-            );
-          })}
+                Connect
+              </button>
+            </li>
+          ))}
         </ul>
       </div>
 
