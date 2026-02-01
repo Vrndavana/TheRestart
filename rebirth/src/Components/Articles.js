@@ -15,7 +15,7 @@ export default function Articles({
   handleDeletePost,
   handleCommentLike,
   handleCommentDislike,
-  colors, // new prop
+  colors, // theme colors
 }) {
   return (
     <section
@@ -24,13 +24,13 @@ export default function Articles({
         width: "100%",
         maxWidth: "90%",
         marginBottom: "20px",
-        minHeight: "110vh", // printer bleed
+        minHeight: "110vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         boxSizing: "border-box",
-        backgroundColor: colors.pageBg, // dark mode background
-        color: colors.text, // default text color
+        backgroundColor: colors.pageBg,
+        color: colors.text,
         paddingTop: "20px",
       }}
     >
@@ -49,7 +49,6 @@ export default function Articles({
           handleDeletePost={handleDeletePost}
           handleCommentLike={handleCommentLike}
           handleCommentDislike={handleCommentDislike}
-          colors={colors} // pass colors to Post
         />
       ))}
     </section>

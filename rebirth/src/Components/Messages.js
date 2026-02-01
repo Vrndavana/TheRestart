@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
+import { useTheme } from '../ThemeContext';
 
 const defaultFriends = [
   { id: 'NotL0T1Z', name: 'NotL0T1Z', handle: '@NotL0T1Z', online: true, close: true, mutual: 12, groups: 'Close Friends', lastActive: '2 hours ago' },
@@ -12,6 +13,7 @@ const initialMessages = [
 
 export default function Messages({ friends = defaultFriends, initialMessagesProp = initialMessages }) {
   const currentUser = 'You';
+  const { theme } = useTheme();
 
   const [messages, setMessages] = useState(initialMessagesProp);
   const [expandedContacts, setExpandedContacts] = useState(new Set());
@@ -58,28 +60,45 @@ export default function Messages({ friends = defaultFriends, initialMessagesProp
     .sort(([, msgsA], [, msgsB]) => new Date(msgsB[msgsB.length - 1]?.timestamp || 0) - new Date(msgsA[msgsA.length - 1]?.timestamp || 0))
     .map(([friend]) => friend), [groupedMessages]);
 
-  // ---------- Static colors ----------
-  const colors = {
-    bg: '#f5f5f5',
-    text: '#000',
-    secondaryText: '#555',
-    chatBg: '#e0e0e0',
-    inputBg: '#fff',
-    inputBorder: '#ccc',
-    sentMsg: '#6ee7b7',
-    recvMsg: '#d1d8d6',
-    sentText: '#000',
-    recvText: '#000',
-    buttonBg: '#4a90e2',
-    buttonText: '#fff'
-  };
+  // ---------- THEME COLORS ----------
+  const colors = useMemo(() => theme === 'light'
+    ? {
+        bg: '#f5f5f5',
+        containerBg: '#afa4a4', // off-white for container
+        text: '#222',
+        secondaryText: '#555',
+        chatBg: '#f0f0f0',
+        inputBg: '#fff',
+        inputBorder: '#aaa',
+        sentMsg: '#6ee7b7',
+        recvMsg: '#eee',
+        sentText: '#000',
+        recvText: '#222',
+        buttonBg: '#4a90e2',
+        buttonText: '#fff'
+      }
+    : {
+        bg: '#222',
+        containerBg: '#333',
+        text: '#f5f5f5',
+        secondaryText: '#ccc',
+        chatBg: '#444',
+        inputBg: '#555',
+        inputBorder: '#888',
+        sentMsg: '#6ee7b7',
+        recvMsg: '#555',
+        sentText: '#222',
+        recvText: '#f5f5f5',
+        buttonBg: '#6ee7b7',
+        buttonText: '#222'
+      }, [theme]);
 
   return (
     <section style={{
       width: '100%',
       maxWidth: '900px',
       margin: '20px auto',
-      backgroundColor: colors.bg,
+      backgroundColor: colors.containerBg,
       borderRadius: '8px',
       padding: '20px',
       fontFamily: 'Arial, sans-serif',

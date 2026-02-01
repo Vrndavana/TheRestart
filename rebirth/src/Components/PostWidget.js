@@ -1,4 +1,6 @@
 import React, { useRef, useState } from 'react';
+import { useTheme } from '../ThemeContext';
+
 
 const PostWidget = ({
   visibleCommentsPostId,
@@ -17,6 +19,8 @@ const PostWidget = ({
   const textareaRef = useRef(null);
   const [emptyWarning, setEmptyWarning] = useState(false);
 
+  const { theme } = useTheme();
+
   const handleClick = () => {
     if (postText.trim() === '' && postMedia.length === 0) {
       setEmptyWarning(true);
@@ -30,14 +34,17 @@ const PostWidget = ({
     setPostMedia([]);
   };
 
-  // ---------- STATIC COLORS ----------
-  const background = '#f5f5f5';
-  const postBg = '#ffffff';
-  const commentBg = '#e0e0e0';
-  const textColor = '#000';
-  const buttonColor = '#4a90e2';
-  const buttonTextColor = '#fff';
-  const dislikeColor = '#e53935';
+  // ---------- THEME COLORS ----------
+  const colors = {
+    background: theme === 'dark' ? '#121212' : '#f5f5f5',       // textarea background
+    postBg: theme === 'dark' ? '#1e1e1e' : '#ffffff',          // widget container
+    commentBg: theme === 'dark' ? '#2a2a2a' : '#e0e0e0',       // media preview, toggles
+    textColor: theme === 'dark' ? '#f5f5f5' : '#000000',
+    secondaryText: theme === 'dark' ? '#e0e0e0' : '#444444',
+    buttonColor: theme === 'dark' ? '#6ee7b7' : '#4a90e2',
+    buttonTextColor: '#ffffff',
+    dislikeColor: '#e53935',
+  };
 
   return (
     <section
@@ -46,7 +53,7 @@ const PostWidget = ({
         bottom: '30px',
         left: 0,
         width: '100%',
-        backgroundColor: postBg,
+        backgroundColor: colors.postBg,
         boxShadow: '0 -2px 8px rgba(0,0,0,0.2)',
         padding: '15px 20px',
         boxSizing: 'border-box',
@@ -79,9 +86,9 @@ const PostWidget = ({
             padding: '10px',
             fontSize: '16px',
             borderRadius: '5px',
-            border: `1px solid ${emptyWarning ? 'red' : textColor}`,
-            backgroundColor: background,
-            color: textColor,
+            border: `1px solid ${emptyWarning ? 'red' : colors.textColor}`,
+            backgroundColor: colors.background,
+            color: colors.textColor,
             resize: 'none',
             boxSizing: 'border-box',
           }}
@@ -97,8 +104,8 @@ const PostWidget = ({
               width: '40px',
               height: '24px',
               borderRadius: '12px',
-              border: `1px solid ${textColor}`,
-              backgroundColor: toggle ? buttonColor : commentBg,
+              border: `1px solid ${colors.textColor}`,
+              backgroundColor: toggle ? colors.buttonColor : colors.commentBg,
               cursor: 'pointer',
               position: 'relative',
               outline: 'none',
@@ -113,12 +120,12 @@ const PostWidget = ({
                 width: '20px',
                 height: '20px',
                 borderRadius: '50%',
-                background: background,
+                background: colors.background,
                 transition: 'left 0.3s',
               }}
             />
           </button>
-          <span style={{ fontSize: '16px', userSelect: 'none', color: textColor }}>
+          <span style={{ fontSize: '16px', userSelect: 'none', color: colors.textColor }}>
             Post to all
           </span>
 
@@ -126,8 +133,8 @@ const PostWidget = ({
             onClick={() => fileInputRef.current && fileInputRef.current.click()}
             style={{
               padding: '6px 12px',
-              backgroundColor: buttonColor,
-              color: buttonTextColor,
+              backgroundColor: colors.buttonColor,
+              color: colors.buttonTextColor,
               border: 'none',
               borderRadius: '5px',
               cursor: 'pointer',
@@ -156,8 +163,8 @@ const PostWidget = ({
               style={{
                 marginLeft: 'auto',
                 padding: '6px 12px',
-                backgroundColor: dislikeColor,
-                color: buttonTextColor,
+                backgroundColor: colors.dislikeColor,
+                color: colors.buttonTextColor,
                 border: 'none',
                 borderRadius: '5px',
                 cursor: 'pointer',
@@ -174,9 +181,9 @@ const PostWidget = ({
           <div
             style={{
               fontSize: '14px',
-              color: textColor,
+              color: colors.textColor,
               padding: '6px 10px',
-              backgroundColor: commentBg,
+              backgroundColor: colors.commentBg,
               borderRadius: '5px',
               maxWidth: '600px',
               overflowWrap: 'break-word',
@@ -193,8 +200,8 @@ const PostWidget = ({
             onClick={handleClick}
             style={{
               padding: '10px 20px',
-              backgroundColor: buttonColor,
-              color: buttonTextColor,
+              backgroundColor: colors.buttonColor,
+              color: colors.buttonTextColor,
               border: 'none',
               borderRadius: '5px',
               cursor: 'pointer',
@@ -210,8 +217,8 @@ const PostWidget = ({
               onClick={() => setVisibleCommentsPostId(null)}
               style={{
                 padding: '10px 20px',
-                backgroundColor: dislikeColor,
-                color: buttonTextColor,
+                backgroundColor: colors.dislikeColor,
+                color: colors.buttonTextColor,
                 border: 'none',
                 borderRadius: '5px',
                 cursor: 'pointer',

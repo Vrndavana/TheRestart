@@ -1,13 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../ThemeContext'; // <-- correct import
 
 const Nav = ({ currentUser, handleLogout }) => {
-  // ---------- STATIC COLORS ----------
-  const navBg = '#ffffff';
-  const borderColor = '#ccc';
-  const textColor = '#000';
-  const dislikeColor = '#e53935';
-  const buttonTextColor = '#fff';
+  const { theme } = useTheme(); // get current theme
+
+  // ---------- THEME COLORS ----------
+  const colors = {
+    light: {
+      navBg: '#afa4a4', // your off-white
+      borderColor: '#ccc',
+      textColor: '#000',
+      dislikeColor: '#e53935',
+      buttonTextColor: '#fff',
+    },
+    dark: {
+      navBg: '#121212',
+      borderColor: '#444',
+      textColor: '#f5f5f5',
+      dislikeColor: '#f44336',
+      buttonTextColor: '#fff',
+    },
+  };
+
+  const { navBg, borderColor, textColor, dislikeColor, buttonTextColor } =
+    theme === 'dark' ? colors.dark : colors.light;
 
   return (
     <nav
