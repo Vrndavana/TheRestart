@@ -10,14 +10,15 @@ import PostWidget from './Components/PostWidget';
 import Access from './Components/Access';
 
 function App() {
+  // ----------- USERS & AUTH ----------
   const defaultUsers = { OperaGuy: 'Aaah!', SecurityGuy: 'TheSuperSecurePassword' };
   const [users, setUsers] = useState(defaultUsers);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState('');
 
-  // Post & UI states
+  // ----------- POSTS & UI ----------
   const [postText, setPostText] = useState('');
-  const [postMedia, setPostMedia] = useState([]); // Array of files
+  const [postMedia, setPostMedia] = useState([]);
   const [toggle, setToggle] = useState(false);
   const [visibleCommentsPostId, setVisibleCommentsPostId] = useState(null);
   const [likedPosts, setLikedPosts] = useState([]);
@@ -28,83 +29,32 @@ function App() {
   const fileInputRef = useRef(null);
 
   const [posts, setPosts] = useState([
-    {
-      id: 1,
-      username: 'John Doe',
-      content: 'Had a great day at the beach!',
-      likes: 0,
-      dislikes: 0,
-      comments: [],
-      shares: 0,
-      media: [],
-    },
-    {
-      id: 2,
-      username: 'Jane Smith',
-      content: 'Just finished reading a fantastic book.',
-      likes: 0,
-      dislikes: 0,
-      comments: [],
-      shares: 0,
-      media: [],
-    },
+    { id: 1, username: 'John Doe', content: 'Had a great day at the beach!', likes: 0, dislikes: 0, comments: [], shares: 0, media: [] },
+    { id: 2, username: 'Jane Smith', content: 'Just finished reading a fantastic book.', likes: 0, dislikes: 0, comments: [], shares: 0, media: [] },
   ]);
 
+  // ----------- POST INTERACTIONS ----------
   const handleToggle = () => setToggle(!toggle);
 
-  const handleUploadClick = () => {
-    if (fileInputRef.current) fileInputRef.current.click();
-  };
+  const handleUploadClick = () => { if (fileInputRef.current) fileInputRef.current.click(); };
 
-  // ----------- HANDLE POST OR COMMENT -----------
   const handlePost = () => {
     if (!postText.trim() && (!postMedia || postMedia.length === 0)) return;
 
-    const mediaURLs = postMedia ? postMedia.map(file => ({
-      url: URL.createObjectURL(file),
-      name: file.name
-    })) : [];
+    const mediaURLs = postMedia ? postMedia.map(file => ({ url: URL.createObjectURL(file), name: file.name })) : [];
 
     if (visibleCommentsPostId !== null) {
-      // Add comment to the post WITHOUT closing the comment section
-      const newComment = {
-        id: Date.now(),
-        username: currentUser,
-        content: postText.trim(),
-        likes: 0,
-        dislikes: 0,
-        likedBy: [],
-        dislikedBy: [],
-      };
-
-      setPosts(prevPosts =>
-        prevPosts.map(post =>
-          post.id === visibleCommentsPostId
-            ? { ...post, comments: [...post.comments, newComment] }
-            : post
-        )
-      );
+      const newComment = { id: Date.now(), username: currentUser, content: postText.trim(), likes: 0, dislikes: 0, likedBy: [], dislikedBy: [] };
+      setPosts(prevPosts => prevPosts.map(post => post.id === visibleCommentsPostId ? { ...post, comments: [...post.comments, newComment] } : post));
     } else {
-      // Add new post
-      const newPost = {
-        id: Date.now(),
-        username: currentUser,
-        content: postText.trim(),
-        likes: 0,
-        dislikes: 0,
-        comments: [],
-        shares: 0,
-        media: mediaURLs,
-      };
+      const newPost = { id: Date.now(), username: currentUser, content: postText.trim(), likes: 0, dislikes: 0, comments: [], shares: 0, media: mediaURLs };
       setPosts(prevPosts => [newPost, ...prevPosts]);
     }
 
-    // Reset only input fields, keep comment section open if posting a comment
     setPostText('');
     setPostMedia([]);
   };
 
-  // ----------- POST INTERACTIONS -----------
   const handleLike = (postId) => {
     if (likedPosts.includes(postId)) {
       setPosts(prev => prev.map(p => p.id === postId ? { ...p, likes: p.likes - 1 } : p));
@@ -138,20 +88,7 @@ function App() {
     alert('Shared post!');
   };
 
-  // ----------- COMMENTS TOGGLE -----------
-  const handleCommentClick = (postId) => {
-    if (visibleCommentsPostId === postId) {
-      // Clicking same post closes comments
-      setVisibleCommentsPostId(null);
-      setPostText('');
-      setPostMedia([]);
-    } else {
-      // Clicking new post opens comments and closes previous
-      setVisibleCommentsPostId(postId);
-      setPostText('');
-      setPostMedia([]);
-    }
-  };
+  const handleCommentClick = (postId) => { if (visibleCommentsPostId !== postId) setVisibleCommentsPostId(postId); };
 
   const handleDeletePost = (postId) => {
     setPosts(prev => prev.filter(p => p.id !== postId));
@@ -161,82 +98,7 @@ function App() {
     if (visibleCommentsPostId === postId) setVisibleCommentsPostId(null);
   };
 
-  const handleDeleteAllPosts = () => {
-    setPosts([]);
-    setVisibleCommentsPostId(null);
-    setLikedPosts([]);
-    setDislikedPosts([]);
-    setSharedPosts([]);
-  };
-
-  // ----------- COMMENT LIKE/DISLIKE -----------
-  const handleCommentLike = (postId, commentId) => {
-    setPosts(prevPosts =>
-      prevPosts.map(post => {
-        if (post.id !== postId) return post;
-        return {
-          ...post,
-          comments: post.comments.map(comment => {
-            if (comment.id !== commentId) return comment;
-            const liked = comment.likedBy.includes(currentUser);
-            const disliked = comment.dislikedBy.includes(currentUser);
-            let likes = comment.likes;
-            let dislikes = comment.dislikes;
-            let likedBy = [...comment.likedBy];
-            let dislikedBy = [...comment.dislikedBy];
-
-            if (liked) {
-              likedBy = likedBy.filter(u => u !== currentUser);
-              likes--;
-            } else {
-              likedBy.push(currentUser);
-              likes++;
-              if (disliked) {
-                dislikedBy = dislikedBy.filter(u => u !== currentUser);
-                dislikes--;
-              }
-            }
-
-            return { ...comment, likes, dislikes, likedBy, dislikedBy };
-          })
-        };
-      })
-    );
-  };
-
-  const handleCommentDislike = (postId, commentId) => {
-    setPosts(prevPosts =>
-      prevPosts.map(post => {
-        if (post.id !== postId) return post;
-        return {
-          ...post,
-          comments: post.comments.map(comment => {
-            if (comment.id !== commentId) return comment;
-            const liked = comment.likedBy.includes(currentUser);
-            const disliked = comment.dislikedBy.includes(currentUser);
-            let likes = comment.likes;
-            let dislikes = comment.dislikes;
-            let likedBy = [...comment.likedBy];
-            let dislikedBy = [...comment.dislikedBy];
-
-            if (disliked) {
-              dislikedBy = dislikedBy.filter(u => u !== currentUser);
-              dislikes--;
-            } else {
-              dislikedBy.push(currentUser);
-              dislikes++;
-              if (liked) {
-                likedBy = likedBy.filter(u => u !== currentUser);
-                likes--;
-              }
-            }
-
-            return { ...comment, likes, dislikes, likedBy, dislikedBy };
-          })
-        };
-      })
-    );
-  };
+  const handleDeleteAllPosts = () => { setPosts([]); setVisibleCommentsPostId(null); setLikedPosts([]); setDislikedPosts([]); setSharedPosts([]); };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -249,7 +111,6 @@ function App() {
     setVisibleCommentsPostId(null);
   };
 
-  // ----------- CLICK OUTSIDE TO CLOSE COMMENTS -----------
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (newsfeedRef.current && !newsfeedRef.current.contains(event.target) && visibleCommentsPostId !== null) {
@@ -262,77 +123,37 @@ function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [visibleCommentsPostId]);
 
-  const mainContentStyle = { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', padding: '20px', paddingBottom: '180px' };
+  const mainContentStyle = { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', padding: '20px', width: '100%' };
+
+  // ---------- STATIC COLORS ----------
+  const bgColor = '#f5f5f5'; // default app background
 
   const mainApp = (
     <div
       className="app-container"
-      style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', fontFamily: 'Arial, sans-serif', backgroundColor: '#254042', paddingBottom: '60px' }}
+      style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', fontFamily: 'Arial, sans-serif', backgroundColor: bgColor, width: '100vw' }}
       ref={newsfeedRef}
     >
       <main style={mainContentStyle}>
         <Routes>
-          <Route path="/" element={
-            <Articles
-              posts={posts}
-              currentUser={currentUser}
-              likedPosts={likedPosts}
-              dislikedPosts={dislikedPosts}
-              visibleCommentsPostId={visibleCommentsPostId}
-              handleLike={handleLike}
-              handleDislike={handleDislike}
-              handleCommentClick={handleCommentClick}
-              handleShare={handleShare}
-              handleDeletePost={handleDeletePost}
-              handleCommentLike={handleCommentLike}
-              handleCommentDislike={handleCommentDislike}
-            />
-          }/>
-          <Route path="/profile" element={
-            <Profile
-              posts={posts}
-              currentUser={currentUser}
-              likedPosts={likedPosts}
-              dislikedPosts={dislikedPosts}
-              visibleCommentsPostId={visibleCommentsPostId}
-              handleLike={handleLike}
-              handleDislike={handleDislike}
-              handleCommentClick={handleCommentClick}
-              handleShare={handleShare}
-              handleDeletePost={handleDeletePost}
-              handleCommentLike={handleCommentLike}
-              handleCommentDislike={handleCommentDislike}
-            />
-          }/>
-          <Route path="/settings" element={<Settings />}/>
-          <Route path="/messages" element={<Messages />}/>
-          <Route path="/friends" element={<Friends />}/>
+          <Route path="/" element={<Articles posts={posts} currentUser={currentUser} likedPosts={likedPosts} dislikedPosts={dislikedPosts} visibleCommentsPostId={visibleCommentsPostId} handleLike={handleLike} handleDislike={handleDislike} handleCommentClick={handleCommentClick} handleShare={handleShare} handleDeletePost={handleDeletePost} colors={{}} />} />
+          <Route path="/profile" element={<Profile posts={posts} currentUser={currentUser} likedPosts={likedPosts} dislikedPosts={dislikedPosts} visibleCommentsPostId={visibleCommentsPostId} handleLike={handleLike} handleDislike={handleDislike} handleCommentClick={handleCommentClick} handleShare={handleShare} handleDeletePost={handleDeletePost} colors={{}} />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/friends" element={<Friends />} />
         </Routes>
       </main>
 
-      <PostWidget
-        visibleCommentsPostId={visibleCommentsPostId}
-        setVisibleCommentsPostId={setVisibleCommentsPostId}
-        postText={postText}
-        setPostText={setPostText}
-        toggle={toggle}
-        setToggle={setToggle}
-        fileInputRef={fileInputRef}
-        postMedia={postMedia}
-        setPostMedia={setPostMedia}
-        currentUser={currentUser}
-        handleDeleteAllPosts={handleDeleteAllPosts}
-        handlePost={handlePost}
-      />
+      <PostWidget visibleCommentsPostId={visibleCommentsPostId} setVisibleCommentsPostId={setVisibleCommentsPostId} postText={postText} setPostText={setPostText} toggle={toggle} setToggle={setToggle} fileInputRef={fileInputRef} postMedia={postMedia} setPostMedia={setPostMedia} currentUser={currentUser} handleDeleteAllPosts={handleDeleteAllPosts} handlePost={handlePost} colors={{}} />
 
-      <Nav currentUser={currentUser} handleLogout={handleLogout}/>
+      <Nav currentUser={currentUser} handleLogout={handleLogout} colors={{}} />
     </div>
   );
 
   if (!isLoggedIn) {
     return (
-      <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'Arial, sans-serif', backgroundColor: '#1f2227', padding: '20px' }}>
-        <Access users={users} setUsers={setUsers} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} currentUser={currentUser} setCurrentUser={setCurrentUser}/>
+      <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'Arial, sans-serif', backgroundColor: bgColor, width: '100vw' }}>
+        <Access users={users} setUsers={setUsers} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} currentUser={currentUser} setCurrentUser={setCurrentUser} />
       </div>
     );
   }

@@ -2,6 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Nav = ({ currentUser, handleLogout }) => {
+  // ---------- STATIC COLORS ----------
+  const navBg = '#ffffff';
+  const borderColor = '#ccc';
+  const textColor = '#000';
+  const dislikeColor = '#e53935';
+  const buttonTextColor = '#fff';
+
   return (
     <nav
       style={{
@@ -9,20 +16,28 @@ const Nav = ({ currentUser, handleLogout }) => {
         bottom: 0,
         left: 0,
         width: '100%',
-        backgroundColor: '#687e7c',
-        borderTop: '1px solid #ddd',
+        backgroundColor: navBg,
+        borderTop: `1px solid ${borderColor}`,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         padding: '5px 5px',
-        boxShadow: '0 -1px 5px rgba(0,0,0,0.1)',
+        boxShadow: '0 -1px 5px rgba(0,0,0,0.2)',
         zIndex: 1000,
         gap: '5px',
         fontFamily: 'Arial, sans-serif',
       }}
     >
       {/* User display */}
-      <div style={{ fontWeight: 'bold', color: '#fafdfd', margin: 'auto',padding: '0 10px', fontSize: '8px' }}>
+      <div
+        style={{
+          fontWeight: 'bold',
+          color: textColor,
+          margin: 'auto',
+          padding: '0 10px',
+          fontSize: '10px',
+        }}
+      >
         {currentUser}
       </div>
 
@@ -36,58 +51,58 @@ const Nav = ({ currentUser, handleLogout }) => {
           alignItems: 'center',
         }}
       >
-        {/* Navigation links using Link for browser routing */}
-
-  
-      <li>
-          <Link to="/friends" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
+        <li>
+          <Link
+            to="/friends"
+            style={{ cursor: 'pointer', color: textColor, textDecoration: 'none' }}
+          >
             Friends
           </Link>
         </li>
 
-
         <li>
-          <Link to="/profile" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
+          <Link
+            to="/profile"
+            style={{ cursor: 'pointer', color: textColor, textDecoration: 'none' }}
+          >
             Profile
           </Link>
         </li>
 
-
-
-  
-      <li>
-          <Link to="/" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
+        <li>
+          <Link
+            to="/"
+            style={{ cursor: 'pointer', color: textColor, textDecoration: 'none' }}
+          >
             HOME
           </Link>
         </li>
 
         <li>
-          <Link to="/messages" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
+          <Link
+            to="/messages"
+            style={{ cursor: 'pointer', color: textColor, textDecoration: 'none' }}
+          >
             Messages
           </Link>
         </li>
 
-
-
-
-
         <li>
-          <Link to="/settings" style={{ cursor: 'pointer', color: '#fafdfd', textDecoration: 'none' }}>
+          <Link
+            to="/settings"
+            style={{ cursor: 'pointer', color: textColor, textDecoration: 'none' }}
+          >
             Settings
           </Link>
         </li>
-
-
-
-
 
         {/* Log out button */}
         <li>
           <button
             onClick={handleLogout}
             style={{
-              backgroundColor: '#e53935',
-              color: '#fff',
+              backgroundColor: dislikeColor,
+              color: buttonTextColor,
               border: 'none',
               borderRadius: '5px',
               padding: '6px 12px',

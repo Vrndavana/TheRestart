@@ -1,15 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 export default function Settings() {
   const currentUser = 'Your Account';
 
-  const userSettings = {
-    theme: 'dark',
-    platforms: ['The App'],
-  };
-
-  const [platforms, setPlatforms] = useState(userSettings.platforms);
-
+  // ---------- User settings ----------
+  const [platforms, setPlatforms] = useState(['The App']);
   const allAvailablePlatforms = useMemo(
     () => ['Facebook', 'YouTube', 'Twitter', 'Reddit', 'Instagram'],
     []
@@ -22,20 +17,12 @@ export default function Settings() {
     }, {})
   );
 
-  // Linked platform profiles
   const [linkedAccounts, setLinkedAccounts] = useState({});
-
   const [addingGroupFor, setAddingGroupFor] = useState(null);
 
   const platformGroups = useMemo(
     () => ({
-      Facebook: [
-        'Personal Page',
-        'My Story',
-        'The Family Group',
-        'Meme Lords of Arkansas',
-        'Corporate Pick Trackers',
-      ],
+      Facebook: ['Personal Page', 'My Story', 'The Family Group', 'Meme Lords of Arkansas', 'Corporate Pick Trackers'],
       YouTube: ['Personal Page', 'YT Shorts'],
       Twitter: ['Personal Page'],
       Reddit: ['Personal Page', 'r/AITA', 'r/IsThisInfected', 'r/SmoshPit'],
@@ -51,60 +38,59 @@ export default function Settings() {
     }, {})
   );
 
-  // Simulated OAuth auth
-  const authenticatePlatform = async (platform) => {
-    await new Promise((res) => setTimeout(res, 800));
+  // Simulated OAuth popup
+  const handleConnect = (platform) => {
+    const width = 600;
+    const height = 700;
+    const left = window.screenX + (window.innerWidth - width) / 2;
+    const top = window.screenY + (window.innerHeight - height) / 2;
 
-    const mockProfiles = {
-      Facebook: {
-        platformUserId: 'fb_123',
-        username: 'john.doe',
-        displayName: 'John Doe',
-      },
-      Instagram: {
-        platformUserId: 'ig_456',
-        username: '@johndoe',
-        displayName: 'John Doe',
-      },
-      Twitter: {
-        platformUserId: 'tw_789',
-        username: '@johndoe',
-        displayName: 'John Doe',
-      },
-      YouTube: {
-        platformUserId: 'yt_101',
-        username: 'JohnDoeYT',
-        displayName: 'John Doe',
-      },
-      Reddit: {
-        platformUserId: 'rd_202',
-        username: 'u/johndoe',
-        displayName: 'johndoe',
-      },
-    };
-
-    return mockProfiles[platform];
-  };
-
-  const handleConnect = async (platform) => {
-    const profile = await authenticatePlatform(platform);
-
-    setLinkedAccounts((prev) => ({
-      ...prev,
-      [platform]: profile,
-    }));
-
-    setPlatforms((prev) =>
-      prev.includes(platform) ? prev : [...prev, platform]
+    const popup = window.open(
+      '',
+      `${platform} Login`,
+      `width=${width},height=${height},left=${left},top=${top}`
     );
 
-    setConnections((prev) => ({ ...prev, [platform]: true }));
+    if (!popup) return alert('Popup blocked! Please allow popups for this site.');
 
-    setEnabledGroups((prev) => ({
-      ...prev,
-      [platform]: ['Personal Page'],
-    }));
+    popup.document.write(`
+      <h2 style="font-family:Arial,sans-serif;">${platform} OAuth Login</h2>
+      <p style="font-family:Arial,sans-serif;">Simulate logging in as a user.</p>
+      <button id="loginBtn" style="padding:8px 16px;font-size:16px;">Authorize ${platform}</button>
+      <script>
+        const btn = document.getElementById('loginBtn');
+        btn.onclick = () => {
+          window.opener.postMessage(
+            { platform: "${platform}", success: true, username: "demoUser", displayName: "Demo User" },
+            "*"
+          );
+          window.close();
+        };
+      </script>
+    `);
   };
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      const data = event.data;
+      if (!data?.platform || !data?.success) return;
+
+      const platform = data.platform;
+      const profile = {
+        platformUserId: `${platform}_${Date.now()}`,
+        username: data.username,
+        displayName: data.displayName,
+      };
+
+      setLinkedAccounts((prev) => ({ ...prev, [platform]: profile }));
+      setPlatforms((prev) => (prev.includes(platform) ? prev : [...prev, platform]));
+      setConnections((prev) => ({ ...prev, [platform]: true }));
+      setEnabledGroups((prev) => ({ ...prev, [platform]: ['Personal Page'] }));
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   const handleDisconnect = (platform) => {
     setPlatforms((prev) => prev.filter((p) => p !== platform));
@@ -130,40 +116,38 @@ export default function Settings() {
       const current = prev[platform] || [];
       if (current.includes(group)) {
         if (group === 'Personal Page') return prev;
-        return {
-          ...prev,
-          [platform]: current.filter((g) => g !== group),
-        };
+        return { ...prev, [platform]: current.filter((g) => g !== group) };
       }
-      return {
-        ...prev,
-        [platform]: [...current, group],
-      };
+      return { ...prev, [platform]: [...current, group] };
     });
   };
+
+  // ---------- Static Colors ----------
+  const containerBg = '#f5f5f5';
+  const itemBg = '#d1d8d6';
+  const secondaryText = '#000';
 
   return (
     <section
       style={{
-        width: '100%',
-        maxWidth: '600px',
-        margin: '20px auto',
-        backgroundColor: '#8c9795',
+        width: '90%',
+        maxWidth: '700px',
+        margin: '5% auto',
+        backgroundColor: containerBg,
         padding: '20px',
         borderRadius: '8px',
         fontFamily: 'Arial, sans-serif',
       }}
     >
-      <h2 style={{ textAlign: 'center' }}>
-        Settings for {currentUser}
-      </h2>
+      <h2 style={{ textAlign: 'center' }}>Settings for {currentUser}</h2>
 
+      {/* Platform connections */}
       <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
         {platforms.map((platform) => (
           <li
             key={platform}
             style={{
-              backgroundColor: '#f0f0f0',
+              backgroundColor: itemBg,
               padding: '12px',
               borderRadius: '6px',
               marginBottom: '12px',
@@ -207,35 +191,21 @@ export default function Settings() {
                       borderRadius: '4px',
                     }}
                   >
-                    {addingGroupFor === platform
-                      ? 'Close Threads'
-                      : 'Manage Threads'}
+                    {addingGroupFor === platform ? 'Close Threads' : 'Manage Threads'}
                   </button>
                 </div>
               )}
             </div>
 
-            {/* Connected account + threads summary */}
             {linkedAccounts[platform] && (
-              <div
-                style={{
-                  marginTop: '6px',
-                  fontSize: '13px',
-                  color: '#444',
-                }}
-              >
+              <div style={{ marginTop: '6px', fontSize: '13px', color: secondaryText }}>
                 <div>
-                  Connected as{' '}
-                  <strong>{linkedAccounts[platform].displayName}</strong>
+                  Connected as <strong>{linkedAccounts[platform].displayName}</strong>
                 </div>
-                <div>
-                  Threads:{' '}
-                  {enabledGroups[platform]?.join(', ') || 'None'}
-                </div>
+                <div>Threads: {enabledGroups[platform]?.join(', ') || 'None'}</div>
               </div>
             )}
 
-            {/* Thread selector */}
             {addingGroupFor === platform && (
               <ul style={{ marginTop: '10px' }}>
                 {platformGroups[platform].map((group) => (
@@ -245,9 +215,7 @@ export default function Settings() {
                         type="checkbox"
                         checked={enabledGroups[platform]?.includes(group)}
                         disabled={group === 'Personal Page'}
-                        onChange={() =>
-                          toggleGroupSelection(platform, group)
-                        }
+                        onChange={() => toggleGroupSelection(platform, group)}
                       />{' '}
                       {group}
                     </label>

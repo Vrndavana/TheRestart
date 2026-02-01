@@ -14,11 +14,27 @@ export default function Articles({
   handleShare,
   handleDeletePost,
   handleCommentLike,
-  handleCommentDislike
+  handleCommentDislike,
+  colors, // new prop
 }) {
   return (
-    <section style={{ width: "100%", maxWidth: "90%", marginBottom: "20px" }} ref={commentsRef}>
-      {posts.map(post => (
+    <section
+      ref={commentsRef}
+      style={{
+        width: "100%",
+        maxWidth: "90%",
+        marginBottom: "20px",
+        minHeight: "110vh", // printer bleed
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        boxSizing: "border-box",
+        backgroundColor: colors.pageBg, // dark mode background
+        color: colors.text, // default text color
+        paddingTop: "20px",
+      }}
+    >
+      {posts.map((post) => (
         <Post
           key={post.id}
           post={post}
@@ -33,6 +49,7 @@ export default function Articles({
           handleDeletePost={handleDeletePost}
           handleCommentLike={handleCommentLike}
           handleCommentDislike={handleCommentDislike}
+          colors={colors} // pass colors to Post
         />
       ))}
     </section>
