@@ -14,11 +14,25 @@ const PostWidget = ({
   handleDeleteAllPosts,
   handlePost,
 }) => {
-
-
   const textareaRef = useRef(null);
+  const [emptyWarning, setEmptyWarning] = useState(false);
 
-  
+  const handleClick = () => {
+    if (postText.trim() === '' && postMedia.length === 0) {
+      // Warn user if empty
+      setEmptyWarning(true);
+      setTimeout(() => setEmptyWarning(false), 1000);
+      return;
+    }
+
+    handlePost(); // Post comment or post
+    if (textareaRef.current) textareaRef.current.blur();
+
+    // Do NOT reset visibleCommentsPostId so comment section stays open
+    setPostText('');
+    setPostMedia([]);
+  };
+
   return (
     <section
       style={{
@@ -59,20 +73,16 @@ const PostWidget = ({
             padding: '10px',
             fontSize: '16px',
             borderRadius: '5px',
-            border: '1px solid #ccc',
+            border: `1px solid ${emptyWarning ? 'red' : '#ccc'}`,
             resize: 'none',
             boxSizing: 'border-box',
           }}
         />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {/* Toggle Button */}
           <button
             onClick={() => {
-              if (toggle && postText.trim() !== '') {
-                // Prevent toggling off if text is not empty
-                return;
-              }
+              if (toggle && postText.trim() !== '') return;
               setToggle((prev) => !prev);
             }}
             style={{
@@ -86,8 +96,6 @@ const PostWidget = ({
               outline: 'none',
               transition: 'background-color 0.3s',
             }}
-            aria-pressed={toggle}
-            aria-label="Toggle Post to all"
           >
             <span
               style={{
@@ -102,10 +110,8 @@ const PostWidget = ({
               }}
             />
           </button>
-
           <span style={{ fontSize: '16px', userSelect: 'none' }}>Post to all</span>
 
-          {/* Upload Media Button */}
           <button
             onClick={() => fileInputRef.current && fileInputRef.current.click()}
             style={{
@@ -118,26 +124,22 @@ const PostWidget = ({
               fontWeight: 'bold',
               fontSize: '14px',
             }}
-            aria-label="Upload media"
           >
             Add Media
           </button>
 
-          {/* Hidden file input */}
           <input
             type="file"
             ref={fileInputRef}
             style={{ display: 'none' }}
             onChange={(e) => {
-              const file = e.target.files[0];
-              if (file) {
-                setPostMedia(file);
-              }
+              const files = Array.from(e.target.files);
+              if (files.length > 0) setPostMedia((prev) => [...prev, ...files]);
             }}
             accept="*/*"
+            multiple
           />
 
-          {/* Delete All Posts Button for SecurityGuy */}
           {currentUser === 'SecurityGuy' && (
             <button
               onClick={handleDeleteAllPosts}
@@ -152,15 +154,13 @@ const PostWidget = ({
                 fontWeight: 'bold',
                 fontSize: '14px',
               }}
-              aria-label="Delete All Posts"
             >
               Delete All Posts
             </button>
           )}
         </div>
 
-        {/* Show selected media file name if any */}
-        {postMedia && (
+        {postMedia.length > 0 && (
           <div
             style={{
               fontSize: '14px',
@@ -172,37 +172,47 @@ const PostWidget = ({
               overflowWrap: 'break-word',
             }}
           >
-            File: {postMedia.name}
+            {postMedia.map((file, i) => (
+              <div key={i}>File: {file.name}</div>
+            ))}
           </div>
         )}
 
-        {/* Post or Comment Button */}
-        <button
-          onClick={() => {
-            if (postText.trim() === '') {
-              // Textarea empty: switch back to Post mode
-              setVisibleCommentsPostId(null);
-              if (textareaRef.current) textareaRef.current.blur();
-            } else {
-              // Textarea not empty: post comment and keep comment mode active
-              handlePost();
-              if (textareaRef.current) textareaRef.current.blur();
-              // Do NOT clear visibleCommentsPostId here to keep comment section open
-            }
-          }}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#1877f2',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            width: '100%',
-            fontWeight: 'bold',
-          }}
-        >
-          {(visibleCommentsPostId !== null || postText.trim() !== '') ? 'Comment' : 'Post'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={handleClick}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#1877f2',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              width: '100%',
+              fontWeight: 'bold',
+            }}
+          >
+            {(visibleCommentsPostId !== null || postText.trim() !== '') ? 'Comment' : 'Post'}
+          </button>
+
+          {visibleCommentsPostId !== null && (
+            <button
+              onClick={() => setVisibleCommentsPostId(null)}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#f44336',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                width: '100%',
+                fontWeight: 'bold',
+              }}
+            >
+              Close Comments
+            </button>
+          )}
+        </div>
       </div>
     </section>
   );
