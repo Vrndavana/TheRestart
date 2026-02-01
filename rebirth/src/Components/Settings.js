@@ -4,8 +4,6 @@ export default function Settings() {
   // Temporary placeholder user and settings data
   const currentUser = 'Your Account';
   const userSettings = {
-    emailNotifications: true,
-    privacyLevel: 'FED Agents Only',
     theme: 'dark',
     platforms: ['The App'], // Default platform that cannot be removed
   };
@@ -20,8 +18,6 @@ export default function Settings() {
   );
 
   // Track connection state per platform (demo-only)
-  // We no longer need separate connections state; platforms array tracks connected platforms including "The App"
-  // But to keep logic clear, we keep connections state for quick lookup
   const [connections, setConnections] = useState(() =>
     allAvailablePlatforms.reduce((acc, p) => {
       acc[p] = false;
@@ -29,16 +25,16 @@ export default function Settings() {
     }, {})
   );
 
-  // Track which platform's "Add Group" UI is open
+  // Track which platform's "Manage Threads" UI is open
   const [addingGroupFor, setAddingGroupFor] = useState(null);
 
   // Groups per platform (demo static data)
   const platformGroups = useMemo(() => ({
-    Facebook: ['Personal Page', 'Family', 'Work', 'Friends'],
-    YouTube: ['Personal Page', 'Gaming Channel', 'Vlogs', 'Tech Reviews'],
-    Twitter: ['Personal Page', 'News', 'Sports', 'Tech Enthusiasts'],
-    Reddit: ['Personal Page', 'r/reactjs', 'r/javascript', 'r/webdev'],
-    Instagram: ['Personal Page', 'Travel', 'Foodies', 'Photography'],
+    Facebook: ['Personal Page', 'My Story', 'The Family Group', 'Meme Lords of Arkansas', 'Corporate Pick Trackers'],
+    YouTube: ['Personal Page', 'YT Shorts'],
+    Twitter: ['Personal Page'],
+    Reddit: ['Personal Page', 'r/AITA', 'r/IsThisInfected', 'r/SmoshPit'],
+    Instagram: ['Personal Page', 'My Story'],
   }), []);
 
   // Track enabled groups per platform (default to "Personal Page" if connected)
@@ -51,16 +47,13 @@ export default function Settings() {
 
   // Connect platform handler
   const handleConnect = (platform) => {
-    // Add platform to connected list
     setPlatforms((prev) => {
       if (prev.includes(platform)) return prev;
       return [...prev, platform];
     });
 
-    // Mark connected true
     setConnections((prev) => ({ ...prev, [platform]: true }));
 
-    // Ensure default group is set on connect
     setEnabledGroups((prev) => {
       if (prev[platform] && prev[platform].length > 0) return prev;
       return { ...prev, [platform]: ['Personal Page'] };
@@ -69,20 +62,16 @@ export default function Settings() {
 
   // Disconnect platform handler
   const handleDisconnect = (platform) => {
-    // Remove platform from connected list
     setPlatforms((prev) => prev.filter((p) => p !== platform));
 
-    // Mark connected false
     setConnections((prev) => ({ ...prev, [platform]: false }));
 
-    // Remove enabled groups for platform
     setEnabledGroups((prev) => {
       const copy = { ...prev };
       delete copy[platform];
       return copy;
     });
 
-    // Close group selector if open for this platform
     if (addingGroupFor === platform) setAddingGroupFor(null);
   };
 
@@ -91,7 +80,6 @@ export default function Settings() {
     setEnabledGroups((prev) => {
       const currentGroups = prev[platform] || [];
       if (currentGroups.includes(group)) {
-        // Remove group but never remove "Personal Page"
         if (group === 'Personal Page') return prev;
         return {
           ...prev,
@@ -128,39 +116,6 @@ export default function Settings() {
       <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>
         Settings for {currentUser}
       </h2>
-
-      <div style={{ marginBottom: '16px' }}>
-        <label htmlFor="emailNotifications" style={{ fontWeight: 'bold' }}>
-          Email Notifications:
-        </label>
-        <select
-          id="emailNotifications"
-          defaultValue={userSettings.emailNotifications ? 'enabled' : 'disabled'}
-          disabled
-          style={{ marginLeft: '10px', padding: '6px', borderRadius: '6px' }}
-          aria-readonly="true"
-        >
-          <option value="enabled">Enabled</option>
-          <option value="disabled">Disabled</option>
-        </select>
-      </div>
-
-      <div style={{ marginBottom: '16px' }}>
-        <label htmlFor="privacyLevel" style={{ fontWeight: 'bold' }}>
-          Privacy Level:
-        </label>
-        <select
-          id="privacyLevel"
-          defaultValue={userSettings.privacyLevel}
-          disabled
-          style={{ marginLeft: '10px', padding: '6px', borderRadius: '6px' }}
-          aria-readonly="true"
-        >
-          <option value="public">Public</option>
-          <option value="friends">Friends Only</option>
-          <option value="private">Private</option>
-        </select>
-      </div>
 
       <div style={{ marginBottom: '16px' }}>
         <label htmlFor="theme" style={{ fontWeight: 'bold' }}>
@@ -251,7 +206,7 @@ export default function Settings() {
                         fontWeight: 'bold',
                       }}
                     >
-                      {addingGroupFor === platform ? 'Close Groups' : 'Add Group'}
+                      {addingGroupFor === platform ? 'Close Threads' : 'Manage Threads'}
                     </button>
                   </div>
                 )}
@@ -292,7 +247,7 @@ export default function Settings() {
                       fontSize: '15px',
                     }}
                   >
-                    Select Groups for {platform}
+                    Select Threads for {platform}
                   </div>
                   <ul style={{ listStyle: 'none', paddingLeft: 0, margin: 0 }}>
                     {platformGroups[platform].map((group) => {
@@ -335,44 +290,41 @@ export default function Settings() {
         </div>
 
         <ul style={{ listStyle: 'none', paddingLeft: 0, margin: 0 }}>
-          {connectablePlatforms.length === 0 && (
-            <li style={{ fontStyle: 'italic', color: '#444', padding: '8px' }}>
-              All available platforms connected.
-            </li>
-          )}
-          {connectablePlatforms.map((platform) => (
-            <li
-              key={platform}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '10px',
-                marginBottom: '8px',
-                backgroundColor: 'rgba(255,255,255,0.55)',
-                padding: '10px',
-                borderRadius: '8px',
-              }}
-            >
-              <span>{platform}</span>
-
-              <button
-                onClick={() => handleConnect(platform)}
-                aria-label={`Connect ${platform}`}
+          {allAvailablePlatforms
+            .filter((p) => !platforms.includes(p))
+            .map((platform) => (
+              <li
+                key={platform}
                 style={{
-                  backgroundColor: '#6ee7b7',
-                  border: 'none',
-                  borderRadius: '6px',
-                  padding: '8px 14px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  color: '#004d40',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '10px',
+                  marginBottom: '8px',
+                  backgroundColor: 'rgba(255,255,255,0.55)',
+                  padding: '10px',
+                  borderRadius: '8px',
                 }}
               >
-                Connect
-              </button>
-            </li>
-          ))}
+                <span>{platform}</span>
+
+                <button
+                  onClick={() => handleConnect(platform)}
+                  aria-label={`Connect ${platform}`}
+                  style={{
+                    backgroundColor: '#6ee7b7',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '8px 14px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    color: '#004d40',
+                  }}
+                >
+                  Connect
+                </button>
+              </li>
+            ))}
         </ul>
       </div>
 
