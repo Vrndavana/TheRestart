@@ -1,16 +1,49 @@
 import React from 'react';
 
+const defaultFriends = [
+  {
+    id: 'L0T1Z',
+    name: 'L0T1Z',
+    handle: '@L0T1Z',
+    online: true,
+    close: true,
+    mutual: 12,
+    groups: 'Close Friends',
+    lastActive: '2 hours ago',
+  },
+  {
+    id: 'bigspooney',
+    name: 'Big Spooney',
+    handle: '@bigspooney',
+    online: false,
+    close: false,
+    mutual: 8,
+    groups: 'Gaming Buddies',
+    lastActive: '1 day ago',
+  },
+];
+
 export default function Friends({
-  friends = [], // Array of friend objects passed as prop
-  onMessage,   // Callback when clicking Message button
-  onRemove,    // Callback when clicking Remove button
+  friends = [],
+  onMessage,
+  onRemove,
 }) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [filter, setFilter] = React.useState('all'); // all, online, close
   const [selectedFriendId, setSelectedFriendId] = React.useState(null);
 
+  // Combine default friends with passed friends, avoiding duplicates by id
+  const combinedFriends = React.useMemo(() => {
+    const map = new Map();
+    // Add default friends first
+    defaultFriends.forEach(f => map.set(f.id, f));
+    // Add/overwrite with passed friends
+    friends.forEach(f => map.set(f.id, f));
+    return Array.from(map.values());
+  }, [friends]);
+
   // Filter friends based on search and filter
-  const filteredFriends = friends.filter(friend => {
+  const filteredFriends = combinedFriends.filter(friend => {
     const matchesSearch =
       friend.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       friend.handle.toLowerCase().includes(searchTerm.toLowerCase());
@@ -22,7 +55,7 @@ export default function Friends({
     return matchesSearch && matchesFilter;
   });
 
-  const selectedFriend = friends.find(f => f.id === selectedFriendId);
+  const selectedFriend = combinedFriends.find(f => f.id === selectedFriendId);
 
   return (
     <section
