@@ -50,8 +50,8 @@ const Nav = ({ currentUser, handleLogout }) => {
         style={{
           fontWeight: 'bold',
           color: textColor,
-          margin: 'auto',
-          padding: '0 10px',
+          margin: '.5% 3%',
+          padding: '0 1%',
           fontSize: '10px',
         }}
       >
@@ -115,7 +115,7 @@ const Nav = ({ currentUser, handleLogout }) => {
 
         {/* Log out button */}
         <li>
-          <button
+          {/* <button
             onClick={handleLogout}
             style={{
               backgroundColor: dislikeColor,
@@ -130,7 +130,7 @@ const Nav = ({ currentUser, handleLogout }) => {
             aria-label="Log Out"
           >
             Log Out
-          </button>
+          </button> */}
         </li>
       </ul>
     </nav>

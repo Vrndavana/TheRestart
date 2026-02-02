@@ -1,20 +1,19 @@
-// src/Components/Settings.js
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '../ThemeContext';
 
-export default function Settings() {
+export default function Settings({ handleLogout, currentUser }) {
   const { theme, setTheme } = useTheme();
 
   // ---------- THEME COLORS ----------
   const themeColors = theme === 'light'
     ? {
         bg: '#f5f5f5',
-        containerBg: '#8a7a7a', // slightly off-white instead of pure white
+        containerBg: '#8a7a7a',
         text: '#222',
         secondaryText: '#555',
         activeButton: '#4a90e2',
         inactiveButton: '#ccc',
-        itemBg: '#fafafa', // softer than pure white
+        itemBg: '#fafafa',
         buttonText: '#fff',
       }
     : {
@@ -27,8 +26,6 @@ export default function Settings() {
         itemBg: '#444',
         buttonText: '#222',
       };
-
-  const currentUser = 'Your Account';
 
   // ---------- PLATFORM & CONNECTION STATES ----------
   const [platforms, setPlatforms] = useState(['The App']);
@@ -140,6 +137,25 @@ export default function Settings() {
   return (
     <section style={{ width: '90%', maxWidth: '700px', margin: '40px auto', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.containerBg, padding: '20px', borderRadius: '8px' }}>
       <h2 style={{ textAlign: 'center', color: themeColors.text }}>Settings for {currentUser}</h2>
+
+      {/* Log Out Button */}
+      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+      <button
+            onClick={handleLogout}
+            style={{
+    
+              border: 'none',
+              borderRadius: '5px',
+              padding: '6px 12px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '14px',
+            }}
+            aria-label="Log Out"
+          >
+            Log Out
+          </button>
+      </div>
 
       {/* Theme */}
       <div style={{ textAlign: 'center', marginBottom: '20px' }}>

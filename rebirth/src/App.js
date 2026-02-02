@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
@@ -244,6 +243,7 @@ function App() {
     >
       <main style={{...mainContentStyle, background: 'grey'}}>
         <Routes>
+          <Route path="/messages/:userId" element={<Messages />} />
           <Route
             path="/"
             element={
@@ -284,7 +284,7 @@ function App() {
               />
             }
           />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/settings" element={<Settings handleLogout={handleLogout} currentUser={currentUser} />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/friends" element={<Friends />} />
         </Routes>
