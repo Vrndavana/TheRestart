@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useTheme } from '../ThemeContext'; // ThemeContext hook
+import { useTheme } from '../ThemeContext';
 
 export default function Post({
   post,
@@ -9,17 +9,14 @@ export default function Post({
   visibleCommentsPostId,
   handleLike,
   handleDislike,
-  handleCommentClick, // This is the toggle function for comments visibility
+  handleCommentClick,
   handleShare,
   handleDeletePost,
   handleCommentLike,
   handleCommentDislike,
-  handleUpdatePost, // Function to update the post after reply
+  handleUpdatePost,
 }) {
-  // Theme context
-  const { theme } = useTheme(); // "light" or "dark"
-
-  // Colors based on theme
+  const { theme } = useTheme();
   const colors = {
     pageBg: theme === "dark" ? "#121212" : "#f0f0f0",
     postBg: theme === "dark" ? "#8c9795" : "#d1d8d6",
@@ -31,7 +28,6 @@ export default function Post({
     toggleInactive: "#4e4848",
   };
 
-  // Styles
   const postButtonStyle = {
     padding: "5px 10px",
     border: "none",
@@ -52,46 +48,120 @@ export default function Post({
     transition: "0.2s",
   };
 
-  // State for replying to comments
+  // States
   const [replyingToCommentId, setReplyingToCommentId] = useState(null);
   const [replyText, setReplyText] = useState("");
+  const [newCommentText, setNewCommentText] = useState("");
+  const [newCommentFile, setNewCommentFile] = useState(null);
 
-  // Helper functions for button colors
-  const getLikeColor = (postId) => likedPosts.includes(postId) ? "#4CAF50" : "#ddd";
-  const getDislikeColor = (postId) => dislikedPosts.includes(postId) ? "#f44336" : "#ddd";
-  const getCommentLikeColor = (comment) => comment.likedBy.includes(currentUser) ? "#4CAF50" : "#ddd";
-  const getCommentDislikeColor = (comment) => comment.dislikedBy.includes(currentUser) ? "#f44336" : "#ddd";
+  // Like/Dislike helpers
+  const getLikeColor = (postId) =>
+    likedPosts.includes(postId) ? "#4CAF50" : "#ddd";
+  const getDislikeColor = (postId) =>
+    dislikedPosts.includes(postId) ? "#f44336" : "#ddd";
+  const getCommentLikeColor = (comment) =>
+    comment.likedBy.includes(currentUser) ? "#4CAF50" : "#ddd";
+  const getCommentDislikeColor = (comment) =>
+    comment.dislikedBy.includes(currentUser) ? "#f44336" : "#ddd";
 
-  // Function to toggle comments visibility when clicking the Comments button
   const handleToggleComments = () => {
-    if (visibleCommentsPostId === post.id) {
-      handleCommentClick(null);  // Close comments
-    } else {
-      handleCommentClick(post.id);  // Show comments for this post
+    if (visibleCommentsPostId === post.id) handleCommentClick(null);
+    else handleCommentClick(post.id);
+  };
+
+  const handleReplyToComment = (commentId) => {
+    if (!replyText.trim()) return;
+    const newReply = {
+      id: Date.now(),
+      username: currentUser,
+      content: replyText,
+    };
+    const updatedComments = post.comments.map((comment) =>
+      comment.id === commentId
+        ? { ...comment, replies: [...(comment.replies || []), newReply] }
+        : comment
+    );
+    handleUpdatePost({ ...post, comments: updatedComments });
+    setReplyText("");
+    setReplyingToCommentId(null);
+  };
+
+  // Add comment (with optional file)
+  const handleAddComment = () => {
+    if (!newCommentText.trim() && !newCommentFile) return;
+
+    const fileObj = newCommentFile
+      ? {
+          id: Date.now() + "-file",
+          name: newCommentFile.name,
+          url: URL.createObjectURL(newCommentFile),
+          type: newCommentFile.type,
+        }
+      : null;
+
+    const newComment = {
+      id: Date.now(),
+      username: currentUser,
+      content: newCommentText,
+      likes: 0,
+      dislikes: 0,
+      likedBy: [],
+      dislikedBy: [],
+      replies: [],
+      media: fileObj ? [fileObj] : [],
+    };
+
+    handleUpdatePost({ ...post, comments: [...post.comments, newComment] });
+
+    setNewCommentText("");
+    setNewCommentFile(null);
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewCommentFile(e.target.files[0]);
     }
   };
 
-  // Handle comment reply
-  const handleReplyToComment = (commentId) => {
-    if (replyText.trim()) {
-      const newReply = {
-        id: Date.now(), // Use timestamp for unique ID
-        username: currentUser,
-        content: replyText,
-      };
-      const updatedComments = post.comments.map((comment) =>
-        comment.id === commentId
-          ? { ...comment, replies: [...(comment.replies || []), newReply] }
-          : comment
-      );
-      
-      // Update the post with the new replies and call handleUpdatePost
-      handleUpdatePost({ ...post, comments: updatedComments });
-
-      // Reset the reply state
-      setReplyText("");
-      setReplyingToCommentId(null);
-    }
+  // Render media in comments
+  const renderCommentMedia = (media) => {
+    if (!media) return null;
+    return (
+      <div style={{ display: "flex", flexWrap: "wrap", marginTop: "8px", gap: "8px" }}>
+        {media.map((m) => {
+          const lowerName = m.name.toLowerCase();
+          if (lowerName.endsWith(".mp4") || lowerName.endsWith(".webm") || lowerName.endsWith(".ogg")) {
+            return (
+              <video
+                key={m.id}
+                src={m.url}
+                controls
+                style={{ width: "250px", borderRadius: "5px" }}
+              />
+            );
+          } else if (lowerName.endsWith(".mp3") || lowerName.endsWith(".wav") || lowerName.endsWith(".ogg")) {
+            return (
+              <audio
+                key={m.id}
+                src={m.url}
+                controls
+                style={{ width: "250px" }}
+              />
+            );
+          } else {
+            // Images keep aspect ratio
+            return (
+              <img
+                key={m.id}
+                src={m.url}
+                alt={m.name}
+                style={{ maxWidth: "180px", maxHeight: "180px", objectFit: "cover", borderRadius: "5px" }}
+              />
+            );
+          }
+        })}
+      </div>
+    );
   };
 
   return (
@@ -102,19 +172,20 @@ export default function Post({
         padding: "10px",
         marginBottom: "15px",
         borderRadius: "8px",
-        maxWidth: "600px",
-        width: "100%",
+        maxWidth: "90%",
+        minWidth: '70%',
+        width: '100%',
+        
+        
         boxSizing: "border-box",
       }}
     >
-      {/* Header */}
+      {/* Post Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <strong>{post.username}</strong>
-
-        {/* Show delete button for the post owner and SecurityGuy */}
         {(currentUser === post.username || currentUser === "SecurityGuy") && (
           <button
-            onClick={() => handleDeletePost(post.id)} // Handle deletion of the current post
+            onClick={() => handleDeletePost(post.id)}
             style={{
               cursor: "pointer",
               color: "#e53935",
@@ -130,12 +201,14 @@ export default function Post({
 
       <p style={{ marginTop: "6px" }}>{post.content}</p>
 
-      {/* Media */}
+      {/* Post Media */}
       {post.media && post.media.length > 0 && (
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: post.media.every((m) => m.url.match(/\.(jpe?g|png|gif)$/i)) ? "repeat(3, 1fr)" : "1fr",
+            gridTemplateColumns: post.media.every((m) => m.url.match(/\.(jpe?g|png|gif)$/i))
+              ? "repeat(3, 1fr)"
+              : "1fr",
             gap: "10px",
             marginTop: "8px",
           }}
@@ -143,17 +216,17 @@ export default function Post({
           {post.media.map((m, idx) => {
             const lowerName = m.name.toLowerCase();
             if (lowerName.endsWith(".mp4") || lowerName.endsWith(".webm") || lowerName.endsWith(".ogg")) {
-              return <video key={idx} src={m.url} controls style={{ width: "100%", borderRadius: "5px" }} />;
+              return <video key={idx} src={m.url} controls style={{maxHeight:'80vh', width: "100%", borderRadius: "5px" }} />;
             } else if (lowerName.endsWith(".mp3") || lowerName.endsWith(".wav") || lowerName.endsWith(".ogg")) {
-              return <audio key={idx} src={m.url} controls style={{ width: "100%" }} />;
+              return <audio key={idx} src={m.url} controls style={{maxHeight:'80vh', width: "100%" }} />;
             } else {
-              return <img key={idx} src={m.url} alt={m.name} style={{ width: "100%", borderRadius: "5px", objectFit: "cover" }} />;
+              return <img key={idx} src={m.url} alt={m.name} style={{maxHeight:'80vh', width: "100%", borderRadius: "5px", objectFit: "cover" }} />;
             }
           })}
         </div>
       )}
 
-      {/* Post buttons */}
+      {/* Post Buttons */}
       <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "8px" }}>
         <button
           style={{ ...postButtonStyle, backgroundColor: getLikeColor(post.id), color: likedPosts.includes(post.id) ? "#fff" : "#000" }}
@@ -173,12 +246,62 @@ export default function Post({
         >
           {visibleCommentsPostId === post.id ? 'Close Comments' : `Comments (${post.comments.length})`}
         </button>
-        <button style={{ ...postButtonStyle, backgroundColor: "#FF9800", color: "#fff" }} onClick={() => handleShare(post.id)}>
+        <button
+          style={{ ...postButtonStyle, backgroundColor: "#FF9800", color: "#fff" }}
+          onClick={() => handleShare(post.id)}
+        >
           Share ({post.shares})
         </button>
       </div>
 
-      {/* Comments */}
+      {/* Comment Input */}
+      {visibleCommentsPostId === post.id && (
+        <div style={{ display: "flex", marginTop: "8px", alignItems: "center" }}>
+          <textarea
+            value={newCommentText}
+            onChange={(e) => setNewCommentText(e.target.value)}
+            placeholder="Write a comment..."
+            style={{ flex: 1, padding: "5px", borderRadius: "5px", border: "1px solid #ddd", marginRight: "5px" }}
+          />
+          <label
+            htmlFor={`file-input-${post.id}`}
+            style={{
+              padding: "5px 10px",
+              border: "none",
+              borderRadius: "5px",
+              backgroundColor: "#1976d2",
+              color: "#fff",
+              cursor: "pointer",
+              fontWeight: "bold",
+              marginRight: "5px",
+            }}
+          >
+            +
+          </label>
+          <input
+            id={`file-input-${post.id}`}
+            type="file"
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
+          <button
+            onClick={handleAddComment}
+            style={{
+              padding: "5px 10px",
+              border: "none",
+              borderRadius: "5px",
+              backgroundColor: "#4CAF50",
+              color: "#fff",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            Send
+          </button>
+        </div>
+      )}
+
+      {/* Render Comments */}
       {visibleCommentsPostId === post.id &&
         post.comments.map((comment) => (
           <div
@@ -186,71 +309,51 @@ export default function Post({
             style={{
               marginLeft: "20px",
               marginTop: "5px",
+            
               backgroundColor: colors.commentBg,
-              padding: "5px",
-              borderRadius: "5px",
+              padding: "3%",
+              
               color: colors.secondaryText,
             }}
           >
-            <strong style={{ color: colors.text }}>{comment.username}:</strong> {comment.content}
+            <strong style={{ color: colors.text }}>{comment.username}:</strong>
+            <div style={{ marginLeft: "8px", marginTop: "2px" }}>
+              {comment.content}
+              {renderCommentMedia(comment.media)}
+            </div>
+
             <div style={{ display: "flex", justifyContent: "center", marginTop: "5px" }}>
               <button
-                style={{
-                  ...commentButtonStyle,
-                  backgroundColor: getCommentLikeColor(comment),
-                  color: comment.likedBy.includes(currentUser) ? "#fff" : "#000",
-                }}
+                style={{ ...commentButtonStyle, backgroundColor: getCommentLikeColor(comment), color: comment.likedBy.includes(currentUser) ? "#fff" : "#000" }}
                 onClick={() => handleCommentLike(post.id, comment.id)}
               >
                 Like ({comment.likes})
               </button>
               <button
-                style={{
-                  ...commentButtonStyle,
-                  backgroundColor: getCommentDislikeColor(comment),
-                  color: comment.dislikedBy.includes(currentUser) ? "#fff" : "#000",
-                }}
+                style={{ ...commentButtonStyle, backgroundColor: getCommentDislikeColor(comment), color: comment.dislikedBy.includes(currentUser) ? "#fff" : "#000" }}
                 onClick={() => handleCommentDislike(post.id, comment.id)}
               >
                 Dislike ({comment.dislikes})
               </button>
               <button
-                style={{
-                  ...commentButtonStyle,
-                  backgroundColor: colors.toggleActive,
-                  color: "#fff",
-                }}
+                style={{ ...commentButtonStyle, backgroundColor: colors.toggleActive, color: "#fff" }}
                 onClick={() => setReplyingToCommentId(comment.id)}
               >
                 Reply
               </button>
             </div>
 
-            {/* Reply section */}
+            {/* Reply Section */}
             {replyingToCommentId === comment.id && (
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <textarea
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   placeholder="Write a reply..."
-                  style={{
-                    width: "80%",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    border: "1px solid #ddd",
-                    marginRight: "10px",
-                  }}
+                  style={{ width: "80%", padding: "5px", borderRadius: "5px", border: "1px solid #ddd", marginRight: "10px" }}
                 />
                 <button
-                  style={{
-                    padding: "5px 10px",
-                    border: "none",
-                    borderRadius: "5px",
-                    backgroundColor: "#4CAF50",
-                    color: "#fff",
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                  }}
+                  style={{ padding: "5px 10px", border: "none", borderRadius: "5px", backgroundColor: "#4CAF50", color: "#fff", cursor: "pointer", fontWeight: "bold" }}
                   onClick={() => handleReplyToComment(comment.id)}
                 >
                   Send
@@ -265,6 +368,7 @@ export default function Post({
                   <div
                     key={reply.id}
                     style={{
+                      overflowWrap: "break-word",
                       marginLeft: "20px",
                       marginTop: "5px",
                       backgroundColor: colors.commentBg,

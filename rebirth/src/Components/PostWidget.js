@@ -45,27 +45,26 @@ const PostWidget = ({
     dislikeColor: '#d11d1a',
   };
 
-  // Close comments handler (keeps the comments open if toggled)
+  // Close widget handler (does not affect comments)
   const handleCloseWidget = () => {
-    setToggle(false);  // Only close the PostWidget, not the comments
+    setToggle(false);
   };
 
-  // Close comments section handler (keeps the widget open)
+  // Close comments section handler
   const handleCloseComments = () => {
-    setVisibleCommentsPostId(null);  // Close the comments section
+    setVisibleCommentsPostId(null);
   };
 
   return (
     <div>
       {/* TOGGLE POST WIDGET */}
-      {/* Toggle Button (when collapsed) */}
       {!toggle && (
         <button
           onClick={() => setToggle(true)}
           style={{
             position: 'fixed',
-            bottom: '30px',  // Adjust the distance from the bottom
-            left: '5%',    // Adjust the distance from the left
+            bottom: '30px',
+            left: '5%',
             width: '50px',
             height: '50px',
             borderRadius: '50%',
@@ -84,16 +83,16 @@ const PostWidget = ({
         </button>
       )}
 
-      {/* Full Post Widget (when expanded) */}
+      {/* Full Post Widget */}
       {toggle && (
         <section
           style={{
             position: 'fixed',
-            bottom: '30px',
+            bottom: '4%',
             left: '50%',
             transform: 'translateX(-50%)',
-            width: '90%',
-            maxWidth: '92%',
+            width: '80%',
+            maxWidth: '600px',
             backgroundColor: colors.postBg,
             boxShadow: '0 -2px 8px rgba(0,0,0,0.2)',
             padding: '15px 20px',
@@ -103,7 +102,8 @@ const PostWidget = ({
             flexDirection: 'column',
             zIndex: 1000,
             transition: 'all 0.3s ease',
-            height: 'auto', // Expand to show full widget content
+            height: 'auto',
+            borderRadius: '8px',
           }}
         >
           <div
@@ -114,9 +114,10 @@ const PostWidget = ({
               gap: '6px',
             }}
           >
+            {/* Always "Post To The World!" placeholder */}
             <textarea
               ref={textareaRef}
-              placeholder={visibleCommentsPostId !== null ? 'Write a comment...' : 'Post To The World!'}
+              placeholder="Post To The World!"
               value={postText}
               onChange={(e) => setPostText(e.target.value)}
               style={{
@@ -133,6 +134,7 @@ const PostWidget = ({
               }}
             />
 
+            {/* Media & buttons */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <button
                 onClick={() => fileInputRef.current && fileInputRef.current.click()}
@@ -181,9 +183,8 @@ const PostWidget = ({
                 </button>
               )}
 
-              {/* Close button for PostWidget only */}
               <button
-                onClick={handleCloseWidget} // Close PostWidget, NOT comments
+                onClick={handleCloseWidget}
                 style={{
                   padding: '6px 12px',
                   marginLeft: 'auto',
@@ -200,6 +201,7 @@ const PostWidget = ({
               </button>
             </div>
 
+            {/* Media Preview */}
             {postMedia.length > 0 && (
               <div
                 style={{
@@ -218,6 +220,7 @@ const PostWidget = ({
               </div>
             )}
 
+            {/* Post button */}
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
                 onClick={handleClick}
@@ -232,26 +235,8 @@ const PostWidget = ({
                   fontWeight: 'bold',
                 }}
               >
-                {visibleCommentsPostId !== null || postText.trim() !== '' ? 'Comment' : 'Post'}
+                Post
               </button>
-
-              {visibleCommentsPostId !== null && (
-                <button
-                  onClick={handleCloseComments} // Close comments only
-                  style={{
-                    padding: '10px 20px',
-                    backgroundColor: colors.dislikeColor,
-                    color: colors.buttonTextColor,
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    width: '100%',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Close Comments
-                </button>
-              )}
             </div>
           </div>
         </section>

@@ -8,7 +8,7 @@ const Nav = ({ currentUser, handleLogout }) => {
   // ---------- THEME COLORS ----------
   const colors = {
     light: {
-      navBg: '#72a390', // your off-white
+      navBg: '#4896b4', // your off-white
       borderColor: '#ccc',
       textColor: '#000',
       dislikeColor: '#e53935',
