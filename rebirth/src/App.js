@@ -32,7 +32,13 @@ function App() {
 
   const newsfeedRef = useRef(null);
   const fileInputRef = useRef(null);
-
+const handleUpdatePost = (updatedPost) => {
+  setPosts((prevPosts) => {
+    return prevPosts.map((post) =>
+      post.id === updatedPost.id ? updatedPost : post
+    );
+  });
+};
   const [posts, setPosts] = useState([
     { id: 1, username: 'John Doe', content: 'Had a great day at the beach!', likes: 0, dislikes: 0, comments: [], shares: 0, media: [] },
     { id: 2, username: 'Jane Smith', content: 'Just finished reading a fantastic book.', likes: 0, dislikes: 0, comments: [], shares: 0, media: [] },
@@ -264,6 +270,7 @@ function App() {
                 handleDeletePost={handleDeletePost}
                 handleCommentLike={handleCommentLike}
                 handleCommentDislike={handleCommentDislike}
+                 handleUpdatePost={handleUpdatePost}
                 colors={themeColors}
               />
             }

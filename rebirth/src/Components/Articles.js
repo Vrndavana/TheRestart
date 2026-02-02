@@ -1,5 +1,6 @@
 import React from "react";
 import Post from "./Post";
+import { handleUpdatePost } from "../App";
 
 export default function Articles({
   posts,
@@ -15,6 +16,7 @@ export default function Articles({
   handleDeletePost,
   handleCommentLike,
   handleCommentDislike,
+   handleUpdatePost={handleUpdatePost},
   colors, // theme colors
 }) {
   return (
@@ -49,6 +51,7 @@ export default function Articles({
           handleDeletePost={handleDeletePost}
           handleCommentLike={handleCommentLike}
           handleCommentDislike={handleCommentDislike}
+           handleUpdatePost={handleUpdatePost} 
         />
       ))}
     </section>

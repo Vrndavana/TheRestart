@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTheme } from '../ThemeContext'; // ThemeContext hook
 
 export default function Post({
@@ -14,6 +14,7 @@ export default function Post({
   handleDeletePost,
   handleCommentLike,
   handleCommentDislike,
+  handleUpdatePost, // Function to update the post after reply
 }) {
   // Theme context
   const { theme } = useTheme(); // "light" or "dark"
@@ -51,6 +52,10 @@ export default function Post({
     transition: "0.2s",
   };
 
+  // State for replying to comments
+  const [replyingToCommentId, setReplyingToCommentId] = useState(null);
+  const [replyText, setReplyText] = useState("");
+
   // Helper functions for button colors
   const getLikeColor = (postId) => likedPosts.includes(postId) ? "#4CAF50" : "#ddd";
   const getDislikeColor = (postId) => dislikedPosts.includes(postId) ? "#f44336" : "#ddd";
@@ -59,11 +64,33 @@ export default function Post({
 
   // Function to toggle comments visibility when clicking the Comments button
   const handleToggleComments = () => {
-    // If the comments are currently visible for this post, hide them, else show them
     if (visibleCommentsPostId === post.id) {
       handleCommentClick(null);  // Close comments
     } else {
       handleCommentClick(post.id);  // Show comments for this post
+    }
+  };
+
+  // Handle comment reply
+  const handleReplyToComment = (commentId) => {
+    if (replyText.trim()) {
+      const newReply = {
+        id: Date.now(), // Use timestamp for unique ID
+        username: currentUser,
+        content: replyText,
+      };
+      const updatedComments = post.comments.map((comment) =>
+        comment.id === commentId
+          ? { ...comment, replies: [...(comment.replies || []), newReply] }
+          : comment
+      );
+      
+      // Update the post with the new replies and call handleUpdatePost
+      handleUpdatePost({ ...post, comments: updatedComments });
+
+      // Reset the reply state
+      setReplyText("");
+      setReplyingToCommentId(null);
     }
   };
 
@@ -105,12 +132,14 @@ export default function Post({
 
       {/* Media */}
       {post.media && post.media.length > 0 && (
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: post.media.every((m) => m.url.match(/\.(jpe?g|png|gif)$/i)) ? "repeat(3, 1fr)" : "1fr",
-          gap: "10px",
-          marginTop: "8px",
-        }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: post.media.every((m) => m.url.match(/\.(jpe?g|png|gif)$/i)) ? "repeat(3, 1fr)" : "1fr",
+            gap: "10px",
+            marginTop: "8px",
+          }}
+        >
           {post.media.map((m, idx) => {
             const lowerName = m.name.toLowerCase();
             if (lowerName.endsWith(".mp4") || lowerName.endsWith(".webm") || lowerName.endsWith(".ogg")) {
@@ -126,36 +155,129 @@ export default function Post({
 
       {/* Post buttons */}
       <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "8px" }}>
-        <button style={{ ...postButtonStyle, backgroundColor: getLikeColor(post.id), color: likedPosts.includes(post.id) ? "#fff" : "#000" }} onClick={() => handleLike(post.id)}>Like ({post.likes})</button>
-        <button style={{ ...postButtonStyle, backgroundColor: getDislikeColor(post.id), color: dislikedPosts.includes(post.id) ? "#fff" : "#000" }} onClick={() => handleDislike(post.id)}>Dislike ({post.dislikes})</button>
+        <button
+          style={{ ...postButtonStyle, backgroundColor: getLikeColor(post.id), color: likedPosts.includes(post.id) ? "#fff" : "#000" }}
+          onClick={() => handleLike(post.id)}
+        >
+          Like ({post.likes})
+        </button>
+        <button
+          style={{ ...postButtonStyle, backgroundColor: getDislikeColor(post.id), color: dislikedPosts.includes(post.id) ? "#fff" : "#000" }}
+          onClick={() => handleDislike(post.id)}
+        >
+          Dislike ({post.dislikes})
+        </button>
         <button
           style={{ ...postButtonStyle, backgroundColor: colors.postButtonBg, color: "#fff" }}
-          onClick={handleToggleComments} // Toggle Comments visibility
+          onClick={handleToggleComments}
         >
           {visibleCommentsPostId === post.id ? 'Close Comments' : `Comments (${post.comments.length})`}
         </button>
-        <button style={{ ...postButtonStyle, backgroundColor: "#FF9800", color: "#fff" }} onClick={() => handleShare(post.id)}>Share ({post.shares})</button>
+        <button style={{ ...postButtonStyle, backgroundColor: "#FF9800", color: "#fff" }} onClick={() => handleShare(post.id)}>
+          Share ({post.shares})
+        </button>
       </div>
 
       {/* Comments */}
       {visibleCommentsPostId === post.id &&
         post.comments.map((comment) => (
-          <div key={comment.id} style={{ marginLeft: "20px", marginTop: "5px", backgroundColor: colors.commentBg, padding: "5px", borderRadius: "5px", color: colors.secondaryText }}>
+          <div
+            key={comment.id}
+            style={{
+              marginLeft: "20px",
+              marginTop: "5px",
+              backgroundColor: colors.commentBg,
+              padding: "5px",
+              borderRadius: "5px",
+              color: colors.secondaryText,
+            }}
+          >
             <strong style={{ color: colors.text }}>{comment.username}:</strong> {comment.content}
             <div style={{ display: "flex", justifyContent: "center", marginTop: "5px" }}>
               <button
-                style={{ ...commentButtonStyle, backgroundColor: getCommentLikeColor(comment), color: comment.likedBy.includes(currentUser) ? "#fff" : "#000" }}
+                style={{
+                  ...commentButtonStyle,
+                  backgroundColor: getCommentLikeColor(comment),
+                  color: comment.likedBy.includes(currentUser) ? "#fff" : "#000",
+                }}
                 onClick={() => handleCommentLike(post.id, comment.id)}
               >
                 Like ({comment.likes})
               </button>
               <button
-                style={{ ...commentButtonStyle, backgroundColor: getCommentDislikeColor(comment), color: comment.dislikedBy.includes(currentUser) ? "#fff" : "#000" }}
+                style={{
+                  ...commentButtonStyle,
+                  backgroundColor: getCommentDislikeColor(comment),
+                  color: comment.dislikedBy.includes(currentUser) ? "#fff" : "#000",
+                }}
                 onClick={() => handleCommentDislike(post.id, comment.id)}
               >
                 Dislike ({comment.dislikes})
               </button>
+              <button
+                style={{
+                  ...commentButtonStyle,
+                  backgroundColor: colors.toggleActive,
+                  color: "#fff",
+                }}
+                onClick={() => setReplyingToCommentId(comment.id)}
+              >
+                Reply
+              </button>
             </div>
+
+            {/* Reply section */}
+            {replyingToCommentId === comment.id && (
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <textarea
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  placeholder="Write a reply..."
+                  style={{
+                    width: "80%",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    border: "1px solid #ddd",
+                    marginRight: "10px",
+                  }}
+                />
+                <button
+                  style={{
+                    padding: "5px 10px",
+                    border: "none",
+                    borderRadius: "5px",
+                    backgroundColor: "#4CAF50",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                  onClick={() => handleReplyToComment(comment.id)}
+                >
+                  Send
+                </button>
+              </div>
+            )}
+
+            {/* Replies */}
+            {comment.replies && comment.replies.length > 0 && (
+              <div style={{ marginLeft: "20px", marginTop: "5px" }}>
+                {comment.replies.map((reply) => (
+                  <div
+                    key={reply.id}
+                    style={{
+                      marginLeft: "20px",
+                      marginTop: "5px",
+                      backgroundColor: colors.commentBg,
+                      padding: "5px",
+                      borderRadius: "5px",
+                      color: colors.secondaryText,
+                    }}
+                  >
+                    <strong style={{ color: colors.text }}>{reply.username}:</strong> {reply.content}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
     </div>
