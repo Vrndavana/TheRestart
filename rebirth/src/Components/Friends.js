@@ -22,16 +22,18 @@ export default function Friends({
   const [favoriteUsers, setFavoriteUsers] = React.useState([]); // Track favorites
   const [currentFriends, setCurrentFriends] = React.useState([ 'NOTL0T1Z' ]); // Default: NOTL0T1Z is a friend
 
-  // Filter all users (including friends)
+  // Filter all users based on search term and filter
   const filteredUsers = allUsers.filter(user => {
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = 
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       user.handle.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter =
-      filter === 'all' ? true :
-      filter === 'online' ? user.online :
-      filter === 'close' ? user.close :
+    
+    const matchesFilter = 
+      filter === 'all' ? true : 
+      filter === 'online' ? user.online : 
+      filter === 'close' ? user.close : 
       true;
+
     return matchesSearch && matchesFilter;
   });
 
@@ -69,14 +71,14 @@ export default function Friends({
   };
 
   // Separate friends and users
-  const friendsList = allUsers.filter(user => currentFriends.includes(user.id));
-  const usersList = allUsers.filter(user => !currentFriends.includes(user.id));
+  const friendsList = filteredUsers.filter(user => currentFriends.includes(user.id));
+  const usersList = filteredUsers.filter(user => !currentFriends.includes(user.id));
 
   return (
     <section
       style={{
-        width: '100%',
-        maxWidth: '900px',
+        width: '99%',
+        maxWidth: '90%',
         margin: '20px auto',
         backgroundColor: '#8c9795',
         borderRadius: '8px',
@@ -132,20 +134,16 @@ export default function Friends({
           </li>
         )}
         {friendsList.map(user => (
-          <li
-            key={user.id}
-            onClick={() => toggleUserDetails(user.id)}  // Click anywhere on the contact area to toggle
-            style={{
-              padding: '12px 16px',
-              cursor: 'pointer',
-              backgroundColor: expandedFriendId === user.id ? '#d1d8d6' : 'transparent',
-              borderBottom: '1px solid #ccc',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              transition: 'background-color 0.3s ease',
-            }}
-          >
+          <li key={user.id} onClick={() => toggleUserDetails(user.id)} style={{
+            padding: '12px 16px',
+            cursor: 'pointer',
+            backgroundColor: expandedFriendId === user.id ? '#d1d8d6' : 'transparent',
+            borderBottom: '1px solid #ccc',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            transition: 'background-color 0.3s ease',
+          }}>
             <div>
               <strong>{user.name}</strong> <span style={{ color: '#666' }}>({user.handle})</span>
               <div style={{ fontSize: '12px', color: user.online ? 'green' : 'gray' }}>
@@ -155,9 +153,9 @@ export default function Friends({
             <div style={{ fontSize: '12px', color: '#666' }}>
               {user.mutual} mutual friends
               <button
-                onClick={(e) => { 
+                onClick={(e) => {
                   e.stopPropagation();
-                  toggleFavorite(user.id); 
+                  toggleFavorite(user.id);
                 }}
                 style={{
                   marginLeft: '10px',
@@ -173,22 +171,18 @@ export default function Friends({
                 {favoriteUsers.includes(user.id) ? 'Unfavorite' : 'Favorite'}
               </button>
             </div>
-
-            {/* Contact details panel nested inside */}
             {expandedFriendId === user.id && (
-              <div
-                style={{
-                  marginTop: '10px',
-                  padding: '10px',
-                  backgroundColor: '#f9f9f9',
-                  border: '1px solid #ccc',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  flexDirection: 'row',  // Horizontal display
-                  gap: '20px',  // Add gap between text fields
-                  alignItems: 'center',
-                }}
-              >
+              <div style={{
+                marginTop: '10px',
+                padding: '10px',
+                backgroundColor: '#f9f9f9',
+                border: '1px solid #ccc',
+                borderRadius: '8px',
+                display: 'flex',
+                flexDirection: 'row',
+                gap: '20px',
+                alignItems: 'center',
+              }}>
                 <div>
                   <h4>Contact Details</h4>
                   <p><strong>Status:</strong> {user.online ? 'Online' : 'Offline'}</p>
@@ -196,7 +190,24 @@ export default function Friends({
                   <p><strong>Groups:</strong> {user.groups}</p>
                   <p><strong>Last Active:</strong> {user.lastActive}</p>
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column', // Buttons stacked
+                  gap: '10px',
+                }}>
+                  <button
+                    onClick={() => alert(`Viewing ${user.name}'s profile`)} // Add a handler for the profile view
+                    style={{
+                      padding: '10px',
+                      backgroundColor: '#6e7b7',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    Profile
+                  </button>
                   <button
                     onClick={() => onMessage && onMessage(user)}
                     style={{
@@ -211,7 +222,7 @@ export default function Friends({
                     Message
                   </button>
                   <button
-                    onClick={() => toggleFriendStatus(user.id)}  // Toggle Add/Remove Friend
+                    onClick={() => toggleFriendStatus(user.id)}
                     style={{
                       padding: '10px',
                       backgroundColor: '#e53935',
@@ -253,20 +264,16 @@ export default function Friends({
           </li>
         )}
         {usersList.map(user => (
-          <li
-            key={user.id}
-            onClick={() => toggleUserDetails(user.id)}  // Click anywhere on the contact area to toggle
-            style={{
-              padding: '12px 16px',
-              cursor: 'pointer',
-              backgroundColor: expandedFriendId === user.id ? '#d1d8d6' : 'transparent',
-              borderBottom: '1px solid #ccc',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              transition: 'background-color 0.3s ease',
-            }}
-          >
+          <li key={user.id} onClick={() => toggleUserDetails(user.id)} style={{
+            padding: '12px 16px',
+            cursor: 'pointer',
+            backgroundColor: expandedFriendId === user.id ? '#d1d8d6' : 'transparent',
+            borderBottom: '1px solid #ccc',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            transition: 'background-color 0.3s ease',
+          }}>
             <div>
               <strong>{user.name}</strong> <span style={{ color: '#666' }}>({user.handle})</span>
               <div style={{ fontSize: '12px', color: user.online ? 'green' : 'gray' }}>
@@ -276,9 +283,9 @@ export default function Friends({
             <div style={{ fontSize: '12px', color: '#666' }}>
               {user.mutual} mutual friends
               <button
-                onClick={(e) => { 
+                onClick={(e) => {
                   e.stopPropagation();
-                  toggleFavorite(user.id); 
+                  toggleFavorite(user.id);
                 }}
                 style={{
                   marginLeft: '10px',
@@ -294,22 +301,18 @@ export default function Friends({
                 {favoriteUsers.includes(user.id) ? 'Unfavorite' : 'Favorite'}
               </button>
             </div>
-
-            {/* Contact details panel nested inside */}
             {expandedFriendId === user.id && (
-              <div
-                style={{
-                  marginTop: '10px',
-                  padding: '10px',
-                  backgroundColor: '#f9f9f9',
-                  border: '1px solid #ccc',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  flexDirection: 'row',  // Horizontal display
-                  gap: '20px',  // Add gap between text fields
-                  alignItems: 'center',
-                }}
-              >
+              <div style={{
+                marginTop: '10px',
+                padding: '10px',
+                backgroundColor: '#f9f9f9',
+                border: '1px solid #ccc',
+                borderRadius: '8px',
+                display: 'flex',
+                flexDirection: 'row',
+                gap: '20px',
+                alignItems: 'center',
+              }}>
                 <div>
                   <h4>Contact Details</h4>
                   <p><strong>Status:</strong> {user.online ? 'Online' : 'Offline'}</p>
@@ -317,7 +320,24 @@ export default function Friends({
                   <p><strong>Groups:</strong> {user.groups}</p>
                   <p><strong>Last Active:</strong> {user.lastActive}</p>
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column', // Buttons stacked
+                  gap: '10px',
+                }}>
+                  <button
+                    onClick={() => alert(`Viewing ${user.name}'s profile`)} // Placeholder for profile
+                    style={{
+                      padding: '10px',
+                      backgroundColor: '#6e7b7',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    Profile
+                  </button>
                   <button
                     onClick={() => onMessage && onMessage(user)}
                     style={{
@@ -332,7 +352,7 @@ export default function Friends({
                     Message
                   </button>
                   <button
-                    onClick={() => toggleFriendStatus(user.id)}  // Toggle Add/Remove Friend
+                    onClick={() => toggleFriendStatus(user.id)}
                     style={{
                       padding: '10px',
                       backgroundColor: '#6ee7b7',
@@ -354,4 +374,3 @@ export default function Friends({
     </section>
   );
 }
-
