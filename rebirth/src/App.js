@@ -239,7 +239,7 @@ function App() {
   const mainApp = (
     <div
       className="app-container"
-      style={{ background:'grey',display: 'flex', flexDirection: 'column', maxHeight: '101vh', minHeight: '90vh', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, width: '98vw' }}
+      style={{ background:'grey',display: 'flex', flexDirection: 'column', maxHeight: '98vh', minHeight: '90vh', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, width: '98vw' }}
       ref={newsfeedRef}
     >
       <main style={{...mainContentStyle, background: 'grey'}}>
@@ -313,7 +313,7 @@ function App() {
   // ---------- LOGIN SCREEN ----------
   if (!isLoggedIn) {
     return (
-      <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, width: '101vw' }}>
+      <div style={{ height: '98vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, width: '98vw' }}>
         <Access users={users} setUsers={setUsers} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} currentUser={currentUser} setCurrentUser={setCurrentUser} />
       </div>
     );

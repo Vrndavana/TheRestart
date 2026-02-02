@@ -375,7 +375,7 @@ a{
 
 .BasementFloor {
   padding: 5% 3%;
-  height:100vh;
+  height:98vh;
   display:flex;
   flex-direction: column;
   background-color: rgb(231, 231, 231);

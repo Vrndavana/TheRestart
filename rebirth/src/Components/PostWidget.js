@@ -36,14 +36,14 @@ const PostWidget = ({
 
   // ---------- THEME COLORS ----------
   const colors = {
-    background: theme === 'dark' ? '#121212' : '#f5f5f5',       // textarea background
-    postBg: theme === 'dark' ? '#1e1e1e' : '#ffffff',          // widget container
+    background: theme === 'dark' ? '#585858' : '#f5f5f5',       // textarea background
+    postBg: theme === 'dark' ? '#4a5351' : '#82b4ae',          // widget container
     commentBg: theme === 'dark' ? '#2a2a2a' : '#e0e0e0',       // media preview, toggles
     textColor: theme === 'dark' ? '#f5f5f5' : '#000000',
     secondaryText: theme === 'dark' ? '#e0e0e0' : '#444444',
-    buttonColor: theme === 'dark' ? '#6ee7b7' : '#4a90e2',
+    buttonColor: theme === 'dark' ? '#6ee7b7' : '#354bca',
     buttonTextColor: '#ffffff',
-    dislikeColor: '#e53935',
+    dislikeColor: '#d11d1a',
   };
 
   return (
