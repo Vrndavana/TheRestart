@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useTheme } from '../ThemeContext';
 
-
 const PostWidget = ({
   visibleCommentsPostId,
   setVisibleCommentsPostId,
@@ -47,121 +46,67 @@ const PostWidget = ({
   };
 
   return (
-    <section
-      style={{
-        position: 'fixed',
-        bottom: '30px',
-        left: 0,
-        width: '100%',
-        backgroundColor: colors.postBg,
-        boxShadow: '0 -2px 8px rgba(0,0,0,0.2)',
-        padding: '15px 20px',
-        boxSizing: 'border-box',
-        display: 'flex',
-        justifyContent: 'center',
-        zIndex: 1000,
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '600px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '6px',
-        }}
-      >
-        <textarea
-          ref={textareaRef}
-          placeholder={
-            visibleCommentsPostId !== null
-              ? 'Write a comment...'
-              : 'Post To The World!'
-          }
-          value={postText}
-          onChange={(e) => setPostText(e.target.value)}
+    <div>
+      {/* Toggle Button (when collapsed) */}
+      {!toggle && (
+        <button
+          onClick={() => setToggle(true)}
           style={{
-            width: '100%',
-            height: '60px',
-            padding: '10px',
-            fontSize: '16px',
-            borderRadius: '5px',
-            border: `1px solid ${emptyWarning ? 'red' : colors.textColor}`,
-            backgroundColor: colors.background,
-            color: colors.textColor,
-            resize: 'none',
-            boxSizing: 'border-box',
+            position: 'fixed',
+            bottom: '30px',  // Adjust the distance from the bottom
+            left: '20px',    // Adjust the distance from the left
+            width: '50px',
+            height: '50px',
+            borderRadius: '50%',
+            margin: '2% 0%',
+            backgroundColor: colors.buttonColor,
+            color: colors.buttonTextColor,
+            border: 'none',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+            zIndex: 1000,
+            cursor: 'pointer',
+            fontSize: '20px',
+            transition: 'all 0.3s ease',
           }}
-        />
+        >
+          +
+        </button>
+      )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <button
-            onClick={() => {
-              if (toggle && postText.trim() !== '') return;
-              setToggle((prev) => !prev);
-            }}
+      {/* Full Post Widget (when expanded) */}
+      {toggle && (
+        <section
+          style={{
+            position: 'fixed',
+            bottom: '30px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '90%',
+            maxWidth: '92%',
+            backgroundColor: colors.postBg,
+            boxShadow: '0 -2px 8px rgba(0,0,0,0.2)',
+            padding: '15px 20px',
+            boxSizing: 'border-box',
+            display: 'flex',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            zIndex: 1000,
+            transition: 'all 0.3s ease',
+            height: 'auto', // Expand to show full widget content
+          }}
+        >
+          <div
             style={{
-              width: '40px',
-              height: '24px',
-              borderRadius: '12px',
-              border: `1px solid ${colors.textColor}`,
-              backgroundColor: toggle ? colors.buttonColor : colors.commentBg,
-              cursor: 'pointer',
-              position: 'relative',
-              outline: 'none',
-              transition: 'background-color 0.3s',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
             }}
           >
-            <span
-              style={{
-                position: 'absolute',
-                top: '2px',
-                left: toggle ? '18px' : '2px',
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                background: colors.background,
-                transition: 'left 0.3s',
-              }}
-            />
-          </button>
-          <span style={{ fontSize: '16px', userSelect: 'none', color: colors.textColor }}>
-            Post to all
-          </span>
-
-          <button
-            onClick={() => fileInputRef.current && fileInputRef.current.click()}
-            style={{
-              padding: '6px 12px',
-              backgroundColor: colors.buttonColor,
-              color: colors.buttonTextColor,
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '14px',
-            }}
-          >
-            Add Media
-          </button>
-
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: 'none' }}
-            onChange={(e) => {
-              const files = Array.from(e.target.files);
-              if (files.length > 0) setPostMedia((prev) => [...prev, ...files]);
-            }}
-            accept="*/*"
-            multiple
-          />
-
-          {currentUser === 'SecurityGuy' && (
+            {/* Close Button inside the widget */}
             <button
-              onClick={handleDeleteAllPosts}
+              onClick={() => setToggle(false)} // Collapse the widget back into a button
               style={{
-                marginLeft: 'auto',
                 padding: '6px 12px',
                 backgroundColor: colors.dislikeColor,
                 color: colors.buttonTextColor,
@@ -170,68 +115,143 @@ const PostWidget = ({
                 cursor: 'pointer',
                 fontWeight: 'bold',
                 fontSize: '14px',
+                alignSelf: 'flex-end',
               }}
             >
-              Delete All Posts
+              Close
             </button>
-          )}
-        </div>
 
-        {postMedia.length > 0 && (
-          <div
-            style={{
-              fontSize: '14px',
-              color: colors.textColor,
-              padding: '6px 10px',
-              backgroundColor: colors.commentBg,
-              borderRadius: '5px',
-              maxWidth: '600px',
-              overflowWrap: 'break-word',
-            }}
-          >
-            {postMedia.map((file, i) => (
-              <div key={i}>File: {file.name}</div>
-            ))}
-          </div>
-        )}
-
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button
-            onClick={handleClick}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: colors.buttonColor,
-              color: colors.buttonTextColor,
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-              width: '100%',
-              fontWeight: 'bold',
-            }}
-          >
-            {(visibleCommentsPostId !== null || postText.trim() !== '') ? 'Comment' : 'Post'}
-          </button>
-
-          {visibleCommentsPostId !== null && (
-            <button
-              onClick={() => setVisibleCommentsPostId(null)}
+            <textarea
+              ref={textareaRef}
+              placeholder={
+                visibleCommentsPostId !== null
+                  ? 'Write a comment...'
+                  : 'Post To The World!'
+              }
+              value={postText}
+              onChange={(e) => setPostText(e.target.value)}
               style={{
-                padding: '10px 20px',
-                backgroundColor: colors.dislikeColor,
-                color: colors.buttonTextColor,
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
                 width: '100%',
-                fontWeight: 'bold',
+                height: '60px',
+                padding: '10px',
+                fontSize: '16px',
+                borderRadius: '5px',
+                border: `1px solid ${emptyWarning ? 'red' : colors.textColor}`,
+                backgroundColor: colors.background,
+                color: colors.textColor,
+                resize: 'none',
+                boxSizing: 'border-box',
               }}
-            >
-              Close Comments
-            </button>
-          )}
-        </div>
-      </div>
-    </section>
+            />
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+
+
+              <button
+                onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                style={{
+                  padding: '6px 12px',
+                  backgroundColor: colors.buttonColor,
+                  color: colors.buttonTextColor,
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                }}
+              >
+                Add Media
+              </button>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const files = Array.from(e.target.files);
+                  if (files.length > 0) setPostMedia((prev) => [...prev, ...files]);
+                }}
+                accept="*/*"
+                multiple
+              />
+
+              {currentUser === 'SecurityGuy' && (
+                <button
+                  onClick={handleDeleteAllPosts}
+                  style={{
+                    marginLeft: 'auto',
+                    padding: '6px 12px',
+                    backgroundColor: colors.dislikeColor,
+                    color: colors.buttonTextColor,
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                  }}
+                >
+                  Delete All Posts
+                </button>
+              )}
+            </div>
+
+            {postMedia.length > 0 && (
+              <div
+                style={{
+                  fontSize: '14px',
+                  color: colors.textColor,
+                  padding: '6px 10px',
+                  backgroundColor: colors.commentBg,
+                  borderRadius: '5px',
+                  maxWidth: '600px',
+                  overflowWrap: 'break-word',
+                }}
+              >
+                {postMedia.map((file, i) => (
+                  <div key={i}>File: {file.name}</div>
+                ))}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={handleClick}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: colors.buttonColor,
+                  color: colors.buttonTextColor,
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  width: '100%',
+                  fontWeight: 'bold',
+                }}
+              >
+                {(visibleCommentsPostId !== null || postText.trim() !== '') ? 'Comment' : 'Post'}
+              </button>
+
+              {visibleCommentsPostId !== null && (
+                <button
+                  onClick={() => setVisibleCommentsPostId(null)}
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: colors.dislikeColor,
+                    color: colors.buttonTextColor,
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    width: '100%',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Close Comments
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+    </div>
   );
 };
 
