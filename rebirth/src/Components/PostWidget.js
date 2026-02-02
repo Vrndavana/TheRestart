@@ -45,8 +45,19 @@ const PostWidget = ({
     dislikeColor: '#d11d1a',
   };
 
+  // Close comments handler (keeps the comments open if toggled)
+  const handleCloseWidget = () => {
+    setToggle(false);  // Only close the PostWidget, not the comments
+  };
+
+  // Close comments section handler (keeps the widget open)
+  const handleCloseComments = () => {
+    setVisibleCommentsPostId(null);  // Close the comments section
+  };
+
   return (
     <div>
+      {/* TOGGLE POST WIDGET */}
       {/* Toggle Button (when collapsed) */}
       {!toggle && (
         <button
@@ -54,7 +65,7 @@ const PostWidget = ({
           style={{
             position: 'fixed',
             bottom: '30px',  // Adjust the distance from the bottom
-            left: '20px',    // Adjust the distance from the left
+            left: '5%',    // Adjust the distance from the left
             width: '50px',
             height: '50px',
             borderRadius: '50%',
@@ -105,11 +116,7 @@ const PostWidget = ({
           >
             <textarea
               ref={textareaRef}
-              placeholder={
-                visibleCommentsPostId !== null
-                  ? 'Write a comment...'
-                  : 'Post To The World!'
-              }
+              placeholder={visibleCommentsPostId !== null ? 'Write a comment...' : 'Post To The World!'}
               value={postText}
               onChange={(e) => setPostText(e.target.value)}
               style={{
@@ -174,9 +181,9 @@ const PostWidget = ({
                 </button>
               )}
 
-              {/* Close button positioned next to Add Media button, aligned to the right */}
+              {/* Close button for PostWidget only */}
               <button
-                onClick={() => setToggle(false)} // Collapse the widget back into a button
+                onClick={handleCloseWidget} // Close PostWidget, NOT comments
                 style={{
                   padding: '6px 12px',
                   marginLeft: 'auto',
@@ -225,12 +232,12 @@ const PostWidget = ({
                   fontWeight: 'bold',
                 }}
               >
-                {(visibleCommentsPostId !== null || postText.trim() !== '') ? 'Comment' : 'Post'}
+                {visibleCommentsPostId !== null || postText.trim() !== '' ? 'Comment' : 'Post'}
               </button>
 
               {visibleCommentsPostId !== null && (
                 <button
-                  onClick={() => setVisibleCommentsPostId(null)}
+                  onClick={handleCloseComments} // Close comments only
                   style={{
                     padding: '10px 20px',
                     backgroundColor: colors.dislikeColor,

@@ -9,7 +9,7 @@ export default function Post({
   visibleCommentsPostId,
   handleLike,
   handleDislike,
-  handleCommentClick,
+  handleCommentClick, // This is the toggle function for comments visibility
   handleShare,
   handleDeletePost,
   handleCommentLike,
@@ -56,6 +56,16 @@ export default function Post({
   const getDislikeColor = (postId) => dislikedPosts.includes(postId) ? "#f44336" : "#ddd";
   const getCommentLikeColor = (comment) => comment.likedBy.includes(currentUser) ? "#4CAF50" : "#ddd";
   const getCommentDislikeColor = (comment) => comment.dislikedBy.includes(currentUser) ? "#f44336" : "#ddd";
+
+  // Function to toggle comments visibility when clicking the Comments button
+  const handleToggleComments = () => {
+    // If the comments are currently visible for this post, hide them, else show them
+    if (visibleCommentsPostId === post.id) {
+      handleCommentClick(null);  // Close comments
+    } else {
+      handleCommentClick(post.id);  // Show comments for this post
+    }
+  };
 
   return (
     <div
@@ -118,7 +128,12 @@ export default function Post({
       <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "8px" }}>
         <button style={{ ...postButtonStyle, backgroundColor: getLikeColor(post.id), color: likedPosts.includes(post.id) ? "#fff" : "#000" }} onClick={() => handleLike(post.id)}>Like ({post.likes})</button>
         <button style={{ ...postButtonStyle, backgroundColor: getDislikeColor(post.id), color: dislikedPosts.includes(post.id) ? "#fff" : "#000" }} onClick={() => handleDislike(post.id)}>Dislike ({post.dislikes})</button>
-        <button style={{ ...postButtonStyle, backgroundColor: colors.postButtonBg, color: "#fff" }} onClick={() => handleCommentClick(post.id)}>Comments ({post.comments.length})</button>
+        <button
+          style={{ ...postButtonStyle, backgroundColor: colors.postButtonBg, color: "#fff" }}
+          onClick={handleToggleComments} // Toggle Comments visibility
+        >
+          {visibleCommentsPostId === post.id ? 'Close Comments' : `Comments (${post.comments.length})`}
+        </button>
         <button style={{ ...postButtonStyle, backgroundColor: "#FF9800", color: "#fff" }} onClick={() => handleShare(post.id)}>Share ({post.shares})</button>
       </div>
 
