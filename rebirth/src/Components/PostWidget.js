@@ -103,24 +103,6 @@ const PostWidget = ({
               gap: '6px',
             }}
           >
-            {/* Close Button inside the widget */}
-            <button
-              onClick={() => setToggle(false)} // Collapse the widget back into a button
-              style={{
-                padding: '6px 12px',
-                backgroundColor: colors.dislikeColor,
-                color: colors.buttonTextColor,
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                fontSize: '14px',
-                alignSelf: 'flex-end',
-              }}
-            >
-              Close
-            </button>
-
             <textarea
               ref={textareaRef}
               placeholder={
@@ -145,8 +127,6 @@ const PostWidget = ({
             />
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-
-
               <button
                 onClick={() => fileInputRef.current && fileInputRef.current.click()}
                 style={{
@@ -193,6 +173,24 @@ const PostWidget = ({
                   Delete All Posts
                 </button>
               )}
+
+              {/* Close button positioned next to Add Media button, aligned to the right */}
+              <button
+                onClick={() => setToggle(false)} // Collapse the widget back into a button
+                style={{
+                  padding: '6px 12px',
+                  marginLeft: 'auto',
+                  backgroundColor: colors.dislikeColor,
+                  color: colors.buttonTextColor,
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                }}
+              >
+                Close
+              </button>
             </div>
 
             {postMedia.length > 0 && (

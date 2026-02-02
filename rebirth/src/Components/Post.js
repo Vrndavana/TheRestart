@@ -73,12 +73,22 @@ export default function Post({
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <strong>{post.username}</strong>
-        <button
-          onClick={() => handleDeletePost(post.id)}
-          style={{ cursor: "pointer", color: "#e53935", background: "transparent", border: "none", fontWeight: "bold" }}
-        >
-          Delete
-        </button>
+
+        {/* Show delete button for the post owner and SecurityGuy */}
+        {(currentUser === post.username || currentUser === "SecurityGuy") && (
+          <button
+            onClick={() => handleDeletePost(post.id)} // Handle deletion of the current post
+            style={{
+              cursor: "pointer",
+              color: "#e53935",
+              background: "transparent",
+              border: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Delete
+          </button>
+        )}
       </div>
 
       <p style={{ marginTop: "6px" }}>{post.content}</p>

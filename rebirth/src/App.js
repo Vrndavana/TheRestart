@@ -241,7 +241,11 @@ function App() {
       style={{ background:'grey',display: 'flex', flexDirection: 'column', maxHeight: '98vh', minHeight: '90vh', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, width: '98vw' }}
       ref={newsfeedRef}
     >
-      <main style={{...mainContentStyle, background: 'grey'}}>
+
+
+
+       {/* THE WHITE LINE AROUND THE APP WAS FROM RIGHT HERE!!!! NOT ABOVE!!!! THIS LINE BELOWW~!!!!! */}
+      <main style={{...mainContentStyle, background: '#444', margin: '-1%', marginBottom: '-10%' }}>
         <Routes>
           <Route path="/messages/:userId" element={<Messages />} />
           <Route
