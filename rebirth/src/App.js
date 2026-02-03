@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Routes, Route } from 'react-router-dom';
-
 import Articles from "./Components/Articles";
 import Messages from "./Components/Messages";
 import Friends from "./Components/Friends";
@@ -32,13 +31,13 @@ function App() {
 
   const newsfeedRef = useRef(null);
   const fileInputRef = useRef(null);
-const handleUpdatePost = (updatedPost) => {
-  setPosts((prevPosts) => {
+  const handleUpdatePost = (updatedPost) => {
+   setPosts((prevPosts) => {
     return prevPosts.map((post) =>
       post.id === updatedPost.id ? updatedPost : post
     );
-  });
-};
+    });
+  };
   const [posts, setPosts] = useState([
     { id: 1, username: 'John Doe', content: 'Had a great day at the beach!', likes: 0, dislikes: 0, comments: [], shares: 0, media: [] },
     { id: 2, username: 'Jane Smith', content: 'Just finished reading a fantastic book.', likes: 0, dislikes: 0, comments: [], shares: 0, media: [] },
@@ -225,6 +224,29 @@ const handleUpdatePost = (updatedPost) => {
     );
   };
 
+  // ---------- LOCAL STORAGE SYNC ----------
+  useEffect(() => {
+    const handleStorageChange = () => {
+      // Listen for changes to localStorage
+      const postsData = localStorage.getItem('posts');
+      if (postsData) {
+        setPosts(JSON.parse(postsData));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Load posts from localStorage when component mounts
+    const postsData = localStorage.getItem('posts');
+    if (postsData) {
+      setPosts(JSON.parse(postsData));
+    }
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   // ---------- OUTSIDE CLICK ----------
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -247,10 +269,6 @@ const handleUpdatePost = (updatedPost) => {
       style={{ background:'grey',display: 'flex', flexDirection: 'column', maxHeight: '98vh', minHeight: '90vh', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, width: '98vw' }}
       ref={newsfeedRef}
     >
-
-
-
-       {/* THE WHITE LINE AROUND THE APP WAS FROM RIGHT HERE!!!! NOT ABOVE!!!! THIS LINE BELOWW~!!!!! */}
       <main style={{...mainContentStyle, background: '#444', margin: '-1%', marginBottom: '-10%' }}>
         <Routes>
           <Route path="/messages/:userId" element={<Messages />} />
@@ -270,7 +288,7 @@ const handleUpdatePost = (updatedPost) => {
                 handleDeletePost={handleDeletePost}
                 handleCommentLike={handleCommentLike}
                 handleCommentDislike={handleCommentDislike}
-                 handleUpdatePost={handleUpdatePost}
+                handleUpdatePost={handleUpdatePost}
                 colors={themeColors}
               />
             }

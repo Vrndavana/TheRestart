@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 
 
 
-
-
 const Access = ({
   users,
   setUsers,
