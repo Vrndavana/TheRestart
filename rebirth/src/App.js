@@ -31,17 +31,17 @@ function App() {
 
   const newsfeedRef = useRef(null);
   const fileInputRef = useRef(null);
-  const handleUpdatePost = (updatedPost) => {
-    setPosts((prevPosts) => {
-      return prevPosts.map((post) =>
-        post.id === updatedPost.id ? updatedPost : post
-      );
-    });
-  };
+
   const [posts, setPosts] = useState([
     { id: 1, username: 'John Doe', content: 'Had a great day at the beach!', likes: 0, dislikes: 0, comments: [], shares: 0, media: [] },
     { id: 2, username: 'Jane Smith', content: 'Just finished reading a fantastic book.', likes: 0, dislikes: 0, comments: [], shares: 0, media: [] },
   ]);
+
+  const handleUpdatePost = (updatedPost) => {
+    setPosts((prevPosts) => prevPosts.map(post =>
+      post.id === updatedPost.id ? updatedPost : post
+    ));
+  };
 
   // ----------- THEME COLORS ----------
   const themeColors = useMemo(() => {
@@ -92,23 +92,29 @@ function App() {
   const handleToggle = () => setToggle(!toggle);
   const handleUploadClick = () => fileInputRef.current && fileInputRef.current.click();
 
-  const handlePost = () => {
+  // ----- UPDATED: ONLY CREATE POSTS -----
+  const handleNewPost = () => {
     if (!postText.trim() && (!postMedia || postMedia.length === 0)) return;
 
     const mediaURLs = postMedia ? postMedia.map(file => ({ url: URL.createObjectURL(file), name: file.name })) : [];
 
-    if (visibleCommentsPostId !== null) {
-      const newComment = { id: Date.now(), username: currentUser, content: postText.trim(), likes: 0, dislikes: 0, likedBy: [], dislikedBy: [] };
-      setPosts(prev => prev.map(post => post.id === visibleCommentsPostId ? { ...post, comments: [...post.comments, newComment] } : post));
-    } else {
-      const newPost = { id: Date.now(), username: currentUser, content: postText.trim(), likes: 0, dislikes: 0, comments: [], shares: 0, media: mediaURLs };
-      setPosts(prev => [newPost, ...prev]);
-    }
+    const newPost = {
+      id: Date.now(),
+      username: currentUser,
+      content: postText.trim(),
+      likes: 0,
+      dislikes: 0,
+      comments: [],
+      shares: 0,
+      media: mediaURLs
+    };
 
+    setPosts(prev => [newPost, ...prev]);
     setPostText('');
     setPostMedia([]);
   };
 
+  // ----------- LIKE / DISLIKE / SHARE ----------
   const handleLike = postId => {
     if (likedPosts.includes(postId)) {
       setPosts(prev => prev.map(p => p.id === postId ? { ...p, likes: p.likes - 1 } : p));
@@ -152,7 +158,13 @@ function App() {
     if (visibleCommentsPostId === postId) setVisibleCommentsPostId(null);
   };
 
-  const handleDeleteAllPosts = () => { setPosts([]); setVisibleCommentsPostId(null); setLikedPosts([]); setDislikedPosts([]); setSharedPosts([]); };
+  const handleDeleteAllPosts = () => {
+    setPosts([]);
+    setVisibleCommentsPostId(null);
+    setLikedPosts([]);
+    setDislikedPosts([]);
+    setSharedPosts([]);
+  };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -226,11 +238,11 @@ function App() {
 
   // ---------- PROFILE ROUTING ----------
   const ProfileWrapper = ({ posts }) => {
-    const { username } = useParams();  // Extracting the username from the URL
+    const { username } = useParams();
     return (
       <Profile
         posts={posts}
-        profileOwner={username} // Passing the profileOwner as username
+        profileOwner={username}
         currentUser={currentUser}
         userStats={{
           platforms: ['Web', 'Mobile'],
@@ -291,9 +303,8 @@ function App() {
         </Routes>
       </main>
 
+      {/* ---------- POST WIDGET ---------- */}
       <PostWidget
-        visibleCommentsPostId={visibleCommentsPostId}
-        setVisibleCommentsPostId={setVisibleCommentsPostId}
         postText={postText}
         setPostText={setPostText}
         toggle={toggle}
@@ -303,7 +314,7 @@ function App() {
         setPostMedia={setPostMedia}
         currentUser={currentUser}
         handleDeleteAllPosts={handleDeleteAllPosts}
-        handlePost={handlePost}
+        handlePost={handleNewPost} // 🔥 updated to only create posts
         colors={themeColors}
       />
 

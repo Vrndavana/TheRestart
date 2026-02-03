@@ -2,12 +2,8 @@ import React, { useRef, useState } from 'react';
 import { useTheme } from '../ThemeContext';
 
 const PostWidget = ({
-  visibleCommentsPostId,
-  setVisibleCommentsPostId,
   postText,
   setPostText,
-  toggle,
-  setToggle,
   fileInputRef,
   postMedia,
   setPostMedia,
@@ -37,7 +33,7 @@ const PostWidget = ({
   const colors = {
     background: theme === 'dark' ? '#585858' : '#f5f5f5',       // textarea background
     postBg: theme === 'dark' ? '#4a5351' : '#82b4ae',          // widget container
-    commentBg: theme === 'dark' ? '#2a2a2a' : '#e0e0e0',       // media preview, toggles
+    commentBg: theme === 'dark' ? '#2a2a2a' : '#e0e0e0',       // media preview
     textColor: theme === 'dark' ? '#f5f5f5' : '#000000',
     secondaryText: theme === 'dark' ? '#e0e0e0' : '#444444',
     buttonColor: theme === 'dark' ? '#6ee7b7' : '#354bca',
@@ -45,15 +41,10 @@ const PostWidget = ({
     dislikeColor: '#d11d1a',
   };
 
-  // Close widget handler (does not affect comments)
-  const handleCloseWidget = () => {
-    setToggle(false);
-  };
+  const [toggle, setToggle] = useState(false);
 
-  // Close comments section handler
-  const handleCloseComments = () => {
-    setVisibleCommentsPostId(null);
-  };
+  // Close widget handler
+  const handleCloseWidget = () => setToggle(false);
 
   return (
     <div>
@@ -114,7 +105,7 @@ const PostWidget = ({
               gap: '6px',
             }}
           >
-            {/* Always "Post To The World!" placeholder */}
+            {/* Post textarea */}
             <textarea
               ref={textareaRef}
               placeholder="Post To The World!"
