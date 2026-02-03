@@ -3,7 +3,7 @@ import Post from "./Post";
 
 export default function Profile({
   posts,
-  currentUser,
+  profileOwner,  // This will now represent the profile owner instead of currentUser
   userStats,
   likedPosts,
   dislikedPosts,
@@ -20,7 +20,8 @@ export default function Profile({
   const [bio, setBio] = useState('This is my bio.'); // Default bio text
   const [isEditingBio, setIsEditingBio] = useState(false); // Track if bio is being edited
 
-  const userPosts = posts.filter(p => p.username === currentUser);
+  // Safely filter posts for the profile owner
+  const userPosts = (posts || []).filter(p => p.username === profileOwner); // Use profileOwner to filter posts
   const { platforms = [], friendsCount = 0, groups = [] } = userStats || {};
 
   // Handle profile picture change
@@ -60,7 +61,7 @@ export default function Profile({
       }}
     >
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-        {currentUser}'s Profile
+        {profileOwner}'s Profile  {/* Display the profile owner's name */}
       </h2>
 
       {/* Profile Picture */}
@@ -206,7 +207,7 @@ export default function Profile({
           width: "100%",
         }}
       >
-        <strong>Profile of {currentUser}:</strong>
+        <strong>Profile of {profileOwner}:</strong>  {/* Display the profile owner's name */}
         <div style={{ marginTop: "10px", paddingLeft: "20px" }}>
           {isEditingBio ? (
             <textarea
@@ -262,7 +263,7 @@ export default function Profile({
           <Post
             key={post.id}
             post={post}
-            currentUser={currentUser}
+            currentUser={profileOwner}  
             likedPosts={likedPosts}
             dislikedPosts={dislikedPosts}
             visibleCommentsPostId={visibleCommentsPostId}

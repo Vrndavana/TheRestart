@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useTheme } from '../ThemeContext';
+import { Link } from "react-router-dom";  // Import Link for routing
 
 export default function Post({
   post,
@@ -175,14 +176,16 @@ export default function Post({
         maxWidth: "90%",
         minWidth: '70%',
         width: '100%',
-        
-        
         boxSizing: "border-box",
       }}
     >
       {/* Post Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <strong>{post.username}</strong>
+        {/* Make the username a link */}
+        <Link to={`/profile/${post.username}`} style={{ color: colors.text, textDecoration: "none", fontWeight: "bold" }}>
+          {post.username}
+        </Link>
+
         {(currentUser === post.username || currentUser === "SecurityGuy") && (
           <button
             onClick={() => handleDeletePost(post.id)}
@@ -309,10 +312,8 @@ export default function Post({
             style={{
               marginLeft: "20px",
               marginTop: "5px",
-            
               backgroundColor: colors.commentBg,
               padding: "3%",
-              
               color: colors.secondaryText,
             }}
           >

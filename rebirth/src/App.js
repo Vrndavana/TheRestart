@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useParams } from 'react-router-dom';
 import Articles from "./Components/Articles";
 import Messages from "./Components/Messages";
 import Friends from "./Components/Friends";
@@ -32,10 +32,10 @@ function App() {
   const newsfeedRef = useRef(null);
   const fileInputRef = useRef(null);
   const handleUpdatePost = (updatedPost) => {
-   setPosts((prevPosts) => {
-    return prevPosts.map((post) =>
-      post.id === updatedPost.id ? updatedPost : post
-    );
+    setPosts((prevPosts) => {
+      return prevPosts.map((post) =>
+        post.id === updatedPost.id ? updatedPost : post
+      );
     });
   };
   const [posts, setPosts] = useState([
@@ -218,47 +218,37 @@ function App() {
               dislikes: disliked ? comment.dislikes - 1 : comment.dislikes + 1,
               likes: liked ? comment.likes - 1 : comment.likes,
             };
-          }),
+          })
         };
       })
     );
   };
 
-  // ---------- LOCAL STORAGE SYNC ----------
-  useEffect(() => {
-    const handleStorageChange = () => {
-      // Listen for changes to localStorage
-      const postsData = localStorage.getItem('posts');
-      if (postsData) {
-        setPosts(JSON.parse(postsData));
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    // Load posts from localStorage when component mounts
-    const postsData = localStorage.getItem('posts');
-    if (postsData) {
-      setPosts(JSON.parse(postsData));
-    }
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
-  // ---------- OUTSIDE CLICK ----------
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (newsfeedRef.current && !newsfeedRef.current.contains(event.target) && visibleCommentsPostId !== null) {
-        setVisibleCommentsPostId(null);
-        setPostText('');
-        setPostMedia([]);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [visibleCommentsPostId]);
+  // ---------- PROFILE ROUTING ----------
+  const ProfileWrapper = ({ posts }) => {
+    const { username } = useParams();  // Extracting the username from the URL
+    return (
+      <Profile
+        posts={posts}
+        profileOwner={username} // Passing the profileOwner as username
+        userStats={{
+          platforms: ['Web', 'Mobile'],
+          friendsCount: 5,
+          groups: ['React Devs', 'Gamers']
+        }}
+        likedPosts={likedPosts}
+        dislikedPosts={dislikedPosts}
+        visibleCommentsPostId={visibleCommentsPostId}
+        handleLike={handleLike}
+        handleDislike={handleDislike}
+        handleCommentClick={handleCommentClick}
+        handleShare={handleShare}
+        handleDeletePost={handleDeletePost}
+        handleCommentLike={handleCommentLike}
+        handleCommentDislike={handleCommentDislike}
+      />
+    );
+  };
 
   // ---------- MAIN APP ----------
   const mainContentStyle = { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', padding: '20px', width: '100%' };
@@ -266,7 +256,7 @@ function App() {
   const mainApp = (
     <div
       className="app-container"
-      style={{ background:'grey',display: 'flex', flexDirection: 'column', maxHeight: '98vh', minHeight: '90vh', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, width: '98vw' }}
+      style={{ background: 'grey', display: 'flex', flexDirection: 'column', maxHeight: '98vh', minHeight: '90vh', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, width: '98vw' }}
       ref={newsfeedRef}
     >
       <main style={{...mainContentStyle, background: '#444', margin: '-1%', marginBottom: '-10%' }}>
@@ -293,26 +283,7 @@ function App() {
               />
             }
           />
-          <Route
-            path="/profile"
-            element={
-              <Profile
-                posts={posts}
-                currentUser={currentUser}
-                likedPosts={likedPosts}
-                dislikedPosts={dislikedPosts}
-                visibleCommentsPostId={visibleCommentsPostId}
-                handleLike={handleLike}
-                handleDislike={handleDislike}
-                handleCommentClick={handleCommentClick}
-                handleShare={handleShare}
-                handleDeletePost={handleDeletePost}
-                handleCommentLike={handleCommentLike}
-                handleCommentDislike={handleCommentDislike}
-                colors={themeColors}
-              />
-            }
-          />
+          <Route path="/profile/:username" element={<ProfileWrapper posts={posts} />} />
           <Route path="/settings" element={<Settings handleLogout={handleLogout} currentUser={currentUser} />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/friends" element={<Friends />} />
