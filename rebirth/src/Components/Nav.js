@@ -45,7 +45,7 @@ const Nav = ({ currentUser, handleLogout }) => {
         fontFamily: 'Arial, sans-serif',
       }}
     >
-      {/* User display */}
+      {/* User display as link to profile */}
       <div
         style={{
           fontWeight: 'bold',
@@ -55,7 +55,12 @@ const Nav = ({ currentUser, handleLogout }) => {
           fontSize: '10px',
         }}
       >
-        {currentUser}
+        <Link
+          to={`/profile/${currentUser}`}
+          style={{ color: textColor, textDecoration: 'none' }}
+        >
+          {currentUser}
+        </Link>
       </div>
 
       <ul
@@ -77,14 +82,7 @@ const Nav = ({ currentUser, handleLogout }) => {
           </Link>
         </li>
 
-        <li>
-          <Link
-            to="/profile"
-            style={{ cursor: 'pointer', color: textColor, textDecoration: 'none' }}
-          >
-            Profile
-          </Link>
-        </li>
+        <li></li>
 
         <li>
           <Link
@@ -113,25 +111,8 @@ const Nav = ({ currentUser, handleLogout }) => {
           </Link>
         </li>
 
-        {/* Log out button */}
-        <li>
-          {/* <button
-            onClick={handleLogout}
-            style={{
-              backgroundColor: dislikeColor,
-              color: buttonTextColor,
-              border: 'none',
-              borderRadius: '5px',
-              padding: '6px 12px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '14px',
-            }}
-            aria-label="Log Out"
-          >
-            Log Out
-          </button> */}
-        </li>
+     
+   
       </ul>
     </nav>
   );

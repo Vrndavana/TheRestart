@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Post from "./Post";
 
 export default function Profile({
   posts,
-  profileOwner,  // This will now represent the profile owner instead of currentUser
+  profileOwner,  // Profile owner
+  currentUser,   // Currently logged-in user
   userStats,
   likedPosts,
   dislikedPosts,
@@ -16,12 +17,16 @@ export default function Profile({
   handleCommentLike,
   handleCommentDislike
 }) {
-  const [profilePic, setProfilePic] = useState('default-profile-pic.png'); // Default profile picture URL
-  const [bio, setBio] = useState('This is my bio.'); // Default bio text
+  // Load profile pic and bio from localStorage if they exist
+  const savedProfilePic = localStorage.getItem(`profilePic_${profileOwner}`);
+  const savedBio = localStorage.getItem(`bio_${profileOwner}`);
+
+  const [profilePic, setProfilePic] = useState(savedProfilePic || 'default-profile-pic.png'); // Default profile picture URL
+  const [bio, setBio] = useState(savedBio || 'This is my bio.'); // Default bio text
   const [isEditingBio, setIsEditingBio] = useState(false); // Track if bio is being edited
 
   // Safely filter posts for the profile owner
-  const userPosts = (posts || []).filter(p => p.username === profileOwner); // Use profileOwner to filter posts
+  const userPosts = (posts || []).filter(p => p.username === profileOwner);
   const { platforms = [], friendsCount = 0, groups = [] } = userStats || {};
 
   // Handle profile picture change
@@ -30,9 +35,10 @@ export default function Profile({
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfilePic(reader.result); // Update the profile pic with the file selected
+        setProfilePic(reader.result); // Update state
+        localStorage.setItem(`profilePic_${profileOwner}`, reader.result); // Persist to localStorage
       };
-      reader.readAsDataURL(file); // Convert the file to a base64 URL
+      reader.readAsDataURL(file); // Convert the file to base64
     }
   };
 
@@ -43,8 +49,15 @@ export default function Profile({
 
   // Toggle edit bio mode
   const toggleEditBio = () => {
+    if (isEditingBio) {
+      // Saving bio
+      localStorage.setItem(`bio_${profileOwner}`, bio); // Persist bio to localStorage
+    }
     setIsEditingBio(prevState => !prevState);
   };
+
+  // Check if the current user is the profile owner
+  const isOwner = currentUser === profileOwner;
 
   return (
     <section
@@ -61,7 +74,7 @@ export default function Profile({
       }}
     >
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
-        {profileOwner}'s Profile  {/* Display the profile owner's name */}
+        {profileOwner}'s Profile
       </h2>
 
       {/* Profile Picture */}
@@ -72,7 +85,7 @@ export default function Profile({
           borderRadius: "50%",
           backgroundColor: "#d1d8d6",
           marginBottom: "20px",
-          backgroundImage: `url(${profilePic})`, // Dynamically change profile picture
+          backgroundImage: `url(${profilePic})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -82,71 +95,70 @@ export default function Profile({
       <input
         type="file"
         accept="image/jpeg, image/gif"
-        style={{ display: "none" }} // Hide the actual file input
+        style={{ display: "none" }}
         onChange={handleProfilePicChange}
         id="profilePicInput"
       />
-      
-      {/* Buttons Row */}
-      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-        {/* Button Row */}
-        <button
-          style={{
-            padding: "8px 16px",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-          onClick={() => document.getElementById('profilePicInput').click()} // Trigger file input click
-        >
-          Profile Picture
-        </button>
 
-        <button
-          style={{
-            padding: "8px 16px",
-            backgroundColor: "#28a745", // Green color for edit
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-          onClick={toggleEditBio}
-        >
-          {isEditingBio ? "Save Bio" : "Edit Bio"}
-        </button>
-      </div>
+      {/* Buttons Row - Only show if profile owner is viewing */}
+      {isOwner && (
+        <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+          <button
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#007bff",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+            onClick={() => document.getElementById('profilePicInput').click()}
+          >
+            Profile Picture
+          </button>
+
+          <button
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#28a745",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+            onClick={toggleEditBio}
+          >
+            {isEditingBio ? "Save Bio" : "Edit Bio"}
+          </button>
+        </div>
+      )}
 
       {/* Badges Row */}
       <div
         style={{
           display: "flex",
-          gap: "20px", // Add more space between badges
+          gap: "20px",
           marginBottom: "20px",
         }}
       >
-        {/* Default Badge - "K" for Account Creation */}
         <div
           style={{
-            width: "40px", // Smaller size
-            height: "40px", // Smaller size
+            width: "40px",
+            height: "40px",
             borderRadius: "8px",
-            backgroundColor: "#007bff", // Blue badge
+            backgroundColor: "#007bff",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             color: "#fff",
             fontWeight: "bold",
-            fontSize: "20px", // Adjust font size to fit within the smaller badge
+            fontSize: "20px",
             position: "relative",
             cursor: "pointer",
           }}
           title="Kompletion Badge: For joining the app"
         >
           K
-          {/* Tooltip on hover */}
           <div
             style={{
               visibility: "hidden",
@@ -168,32 +180,9 @@ export default function Profile({
           </div>
         </div>
 
-        {/* Greyed-out badges for future */}
-        <div
-          style={{
-            width: "40px", // Smaller size
-            height: "40px", // Smaller size
-            borderRadius: "8px",
-            backgroundColor: "#d1d8d6", // Light grey
-          }}
-        ></div>
-        <div
-          style={{
-            width: "40px", // Smaller size
-            height: "40px", // Smaller size
-            borderRadius: "8px",
-            backgroundColor: "#d1d8d6", // Light grey
-          }}
-        ></div>
-        <div
-          style={{
-            width: "40px", // Smaller size
-            height: "40px", // Smaller size
-            borderRadius: "8px",
-            backgroundColor: "#d1d8d6", // Light grey
-          }}
-        ></div>
-        {/* Add more greyed-out badges here as needed */}
+        <div style={{ width: "40px", height: "40px", borderRadius: "8px", backgroundColor: "#d1d8d6" }}></div>
+        <div style={{ width: "40px", height: "40px", borderRadius: "8px", backgroundColor: "#d1d8d6" }}></div>
+        <div style={{ width: "40px", height: "40px", borderRadius: "8px", backgroundColor: "#d1d8d6" }}></div>
       </div>
 
       {/* Bio Section */}
@@ -207,7 +196,7 @@ export default function Profile({
           width: "100%",
         }}
       >
-        <strong>Profile of {profileOwner}:</strong>  {/* Display the profile owner's name */}
+        <strong> Bio: {profileOwner}</strong>
         <div style={{ marginTop: "10px", paddingLeft: "20px" }}>
           {isEditingBio ? (
             <textarea

@@ -231,6 +231,7 @@ function App() {
       <Profile
         posts={posts}
         profileOwner={username} // Passing the profileOwner as username
+        currentUser={currentUser}
         userStats={{
           platforms: ['Web', 'Mobile'],
           friendsCount: 5,
