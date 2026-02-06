@@ -63,7 +63,7 @@ export default function Profile({
     <section
       style={{
         width: "100%",
-        maxWidth: "800px",
+        maxWidth: '80%',
         margin: "0 auto",
         backgroundColor: "#8c9795",
         padding: "20px",
@@ -221,7 +221,7 @@ export default function Profile({
         style={{
           backgroundColor: "#d1d8d6",
           padding: "15px",
-          borderRadius: "8px",
+          
           marginBottom: "20px",
           fontSize: "14px",
           width: "100%",

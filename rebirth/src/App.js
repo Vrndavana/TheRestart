@@ -265,15 +265,15 @@ function App() {
 
   // ---------- MAIN APP ----------
                 // Main App Styles - MaxWidth Adjust the app and components size in it but is not what is causing the screen stretch 
-  const mainContentStyle = { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', padding: '20px', maxWidth: '100%' };
+  const mainContentStyle = { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', padding: '0', maxWidth: '100vw' };
 
   const mainApp = (
     <div
       className="app-container"
-      style={{ background: 'grey', display: 'flex', flexDirection: 'column', maxHeight: '95vh', minHeight: '90vh', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, maxWidth: '100%' }}
+      style={{ background: 'red', display: 'flex', flexDirection: 'column', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, maxWidth: '100%' }}
       ref={newsfeedRef}
     >
-      <main style={{...mainContentStyle, background: '#444',margin: '0'}}>
+      <main style={{...mainContentStyle, background: '#444',maxWidth:'100%',minWidth:'100%'}}>
         <Routes>
           <Route path="/messages/:userId" element={<Messages />} />
           <Route
@@ -329,7 +329,7 @@ function App() {
   // ---------- LOGIN SCREEN ----------
   if (!isLoggedIn) {
     return (
-      <div style={{ height: '98vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, width: '98vw' }}>
+      <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, width: '98vw' }}>
         <Access users={users} setUsers={setUsers} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} currentUser={currentUser} setCurrentUser={setCurrentUser} />
       </div>
     );

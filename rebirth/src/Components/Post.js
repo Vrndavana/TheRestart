@@ -351,7 +351,7 @@ export default function Post({
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
                   placeholder="Write a reply..."
-                  style={{ width: "80%", padding: "5px", borderRadius: "5px", border: "1px solid #161616", marginRight: "10px" }}
+                  style={{ width: "80%", padding: "5px", borderRadius: "5px", border: "1px solid #ddd", marginRight: "10px" }}
                 />
                 <button
                   style={{ padding: "5px 10px", border: "none", borderRadius: "5px", backgroundColor: "#4CAF50", color: "#fff", cursor: "pointer", fontWeight: "bold" }}
