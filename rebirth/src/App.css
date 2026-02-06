@@ -55,7 +55,7 @@
   font-family: 'Roboto Slab', serif;
 }
 .nav {
-  width:100%;
+  max-width:100%;
   position:fixed;
   background-color:#3d3c3cbb;
   height:6vh;

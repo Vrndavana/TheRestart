@@ -264,15 +264,16 @@ function App() {
   };
 
   // ---------- MAIN APP ----------
-  const mainContentStyle = { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', padding: '20px', width: '100%' };
+                // Main App Styles - MaxWidth Adjust the app and components size in it but is not what is causing the screen stretch 
+  const mainContentStyle = { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', padding: '20px', maxWidth: '100%' };
 
   const mainApp = (
     <div
       className="app-container"
-      style={{ background: 'grey', display: 'flex', flexDirection: 'column', maxHeight: '98vh', minHeight: '90vh', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, width: '98vw' }}
+      style={{ background: 'grey', display: 'flex', flexDirection: 'column', maxHeight: '95vh', minHeight: '90vh', fontFamily: 'Arial, sans-serif', backgroundColor: themeColors.bg, maxWidth: '100%' }}
       ref={newsfeedRef}
     >
-      <main style={{...mainContentStyle, background: '#444', margin: '-1%', marginBottom: '-10%' }}>
+      <main style={{...mainContentStyle, background: '#444',margin: '0'}}>
         <Routes>
           <Route path="/messages/:userId" element={<Messages />} />
           <Route
@@ -296,10 +297,13 @@ function App() {
               />
             }
           />
+        
+
           <Route path="/profile/:username" element={<ProfileWrapper posts={posts} />} />
           <Route path="/settings" element={<Settings handleLogout={handleLogout} currentUser={currentUser} />} />
           <Route path="/messages" element={<Messages />} />
-          <Route path="/friends" element={<Friends />} />
+          {/* 🔥 UPDATED: Pass currentUser to Friends */}
+          <Route path="/friends" element={<Friends currentUser={currentUser} user={users} />} />
         </Routes>
       </main>
 

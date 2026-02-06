@@ -64,7 +64,7 @@ export default function Messages({ friends = defaultFriends, initialMessagesProp
   const colors = useMemo(() => theme === 'light'
     ? {
         bg: '#f5f5f5',
-        containerBg: '#afa4a4', // off-white for container
+        containerBg: '#8c9795',
         text: '#222',
         secondaryText: '#555',
         chatBg: '#f0f0f0',
@@ -79,7 +79,7 @@ export default function Messages({ friends = defaultFriends, initialMessagesProp
       }
     : {
         bg: '#222',
-        containerBg: '#333',
+        containerBg: '#292828',
         text: '#f5f5f5',
         secondaryText: '#ccc',
         chatBg: '#444',
@@ -95,7 +95,7 @@ export default function Messages({ friends = defaultFriends, initialMessagesProp
 
   return (
     <section style={{
-      width: '100%',
+      width: '80%',
       maxWidth: '900px',
       margin: '20px auto',
       backgroundColor: colors.containerBg,
@@ -115,7 +115,7 @@ export default function Messages({ friends = defaultFriends, initialMessagesProp
           const sentAt = new Date(lastMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
           return (
-            <li key={friend} style={{ marginBottom: '16px', backgroundColor: colors.chatBg, borderRadius: '8px', padding: '10px' }}>
+            <li key={friend} style={{ marginBottom: '16px', backgroundColor: colors.chatBg, borderRadius: '8px', padding: '12px 16px' }}>
               <button onClick={() => toggleContact(friend)} style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold', color: colors.text }}>
                 <strong>{friend}</strong>: "{preview}" <small style={{ color: colors.secondaryText }}>sent at {sentAt}</small>
               </button>
@@ -145,8 +145,28 @@ export default function Messages({ friends = defaultFriends, initialMessagesProp
                     )
                   })}
                   <form onSubmit={e => { e.preventDefault(); handleSendMessage(friend); }} style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                    <input type="text" value={newMessages[friend] || ''} onChange={e => handleInputChange(friend, e.target.value)} placeholder="Type a message" style={{ flexGrow: 1, padding: '10px', borderRadius: '6px', border: `1px solid ${colors.inputBorder}`, backgroundColor: colors.inputBg, color: colors.text }} />
-                    <button type="submit" style={{ padding: '10px 20px', backgroundColor: colors.buttonBg, color: colors.buttonText, border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Send</button>
+                    <input
+                      type="text"
+                      value={newMessages[friend] || ''}
+                      onChange={e => handleInputChange(friend, e.target.value)}
+                      placeholder="Type a message"
+                      style={{
+                        flexGrow: 1,
+                        padding: '10px',
+                        borderRadius: '6px',
+                        border: `1px solid ${colors.inputBorder}`,
+                        backgroundColor: colors.inputBg,
+                        color: colors.text
+                      }}
+                    />
+                    <button type="submit" style={{
+                      padding: '10px 20px',
+                      backgroundColor: colors.buttonBg,
+                      color: colors.buttonText,
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}>Send</button>
                   </form>
                 </div>
               )}
